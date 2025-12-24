@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/layout/appshell.tsx","./src/components/layout/settingsslideover.tsx","./src/mock/premiummock.ts","./src/mock/socialmock.ts","./src/pages/login.tsx","./src/pages/placeholderpage.tsx","./src/pages/premiumrewardspage.tsx","./src/pages/socialtradingpage.tsx"],"version":"5.9.3"}

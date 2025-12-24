@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global layout rules to enforce fixed portal (no page scroll) */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Ensure root rendering children fill available height and don't create scroll */
+#root > * {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Utility background tweak used by index.html */
+.bg-slate-925 { background-color: #0b1220; }
+
+/* Ensure scrollable panels show internal scrollbars */
+.panel-scroll { overflow: auto; }
+
+/* Utility: ensure flex children can shrink to prevent horizontal overflow */
+.min-w-0 { min-width: 0; }
+
