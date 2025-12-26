@@ -2,9 +2,11 @@
 export const user = {
   id: 'WLX-4521',
   name: 'Wilson Alex',
+  email: 'wilson.alex@bullwaves.com',
   location: 'United States',
   avatar: null,
   risk: 'Medium',
+  status: 'Premium', // Premium, Elite, Top
   kyc: { idVerification: 'verified', address: 'pending' }
 };
 
@@ -25,6 +27,7 @@ export const kpis = {
 kpis.marginUsed = 8000.0;
 kpis.freeMargin = +(kpis.inAccount + 3090.78 - kpis.marginUsed).toFixed(2);
 kpis.plLast30 = 4120.5;
+kpis.bonus = 250.0; // Bonus amount
 kpis.winRate = 52; // percent
 kpis.avgTradeDuration = '2h 14m';
 
@@ -88,5 +91,46 @@ export const markets = [
   { symbol: 'US30', name: 'Dow Jones 30', category: 'indices', bid: 36340, ask: 36360, spread: 20, tickSize: 1, lotSize: 1, tradable: true, changePct: 0.32, change: 116, high: 36450, low: 36000 }
 ];
 
-export default { user, accounts, kpis, timeseries, monthlyBars, topInstruments, instruments, transactions, notifications, markets };
+// open positions examples: long/short, partial sizes, hedged, different instruments
+export const positions = [
+  { id: 'P-9001', symbol: 'EUR/USD', side: 'Buy', size: 1.2, lotSize: 100000, entry: 1.0810, current: 1.0842, leverage: 30, margin: 3600, pl: +384, plPct: 3.2, openedAt: '2025-12-20 09:12', status: 'open' },
+  { id: 'P-9002', symbol: 'BTC/USD', side: 'Sell', size: 0.05, lotSize: 1, entry: 52400, current: 51245.5, leverage: 5, margin: 5240, pl: +577.5, plPct: 11.02, openedAt: '2025-12-15 14:22', status: 'open' },
+  { id: 'P-9003', symbol: 'AAPL', side: 'Buy', size: 50, lotSize: 1, entry: 168.40, current: 173.22, leverage: 2, margin: 4210, pl: +241, plPct: 1.16, openedAt: '2025-12-10 11:00', status: 'open' },
+  { id: 'P-9004', symbol: 'XAU/USD', side: 'Buy', size: 2, lotSize: 100, entry: 2318.0, current: 2321.1, leverage: 10, margin: 4636, pl: +6.2, plPct: 0.13, openedAt: '2025-12-01 08:00', status: 'open' },
+  { id: 'P-9005', symbol: 'ETH/USD', side: 'Buy', size: 3, lotSize: 1, entry: 3750.0, current: 3801.2, leverage: 3, margin: 3750, pl: +153.6, plPct: 1.37, openedAt: '2025-12-22 18:30', status: 'open' }
+];
+
+// funds & ledger examples
+export const funds = {
+  summary: { total: kpis.inAccount, available: kpis.freeMargin, marginUsed: kpis.marginUsed },
+  history: [
+    { id: 'F-2001', type: 'Deposit', method: 'Card', amount: 2000, date: '2025-12-15', status: 'Completed' },
+    { id: 'F-2002', type: 'Deposit', method: 'Wire', amount: 50000, date: '2025-12-18', status: 'Completed' },
+    { id: 'F-2003', type: 'Withdrawal', method: 'Bank', amount: -1500, date: '2025-12-22', status: 'Pending' }
+  ]
+};
+
+// sample orders to demonstrate pending/limit/market flows
+export const orders = [
+  { id: 'O-3001', symbol: 'EUR/USD', side: 'Buy', type: 'Market', size: 1.0, price: 1.0845, status: 'Filled', createdAt: '2025-12-24 08:35' },
+  { id: 'O-3002', symbol: 'BTC/USD', side: 'Buy', type: 'Limit', size: 0.02, price: 50000, status: 'Pending', createdAt: '2025-12-23 14:12' },
+  { id: 'O-3003', symbol: 'AAPL', side: 'Sell', type: 'Stop', size: 20, price: 165.0, status: 'Cancelled', createdAt: '2025-12-21 09:00' }
+];
+
+// documents and compliance artifacts
+export const documents = [
+  { id: 'D-1', type: 'ID', name: 'passport_wilson_alex.pdf', issuedBy: 'US Passport Office', status: 'verified', uploadedAt: '2025-10-01' },
+  { id: 'D-2', type: 'Address', name: 'utility_bill_dec24.pdf', issuedBy: 'Electric Co.', status: 'pending', uploadedAt: '2025-12-12' },
+  { id: 'D-3', type: 'Tax', name: 'tax_2024.pdf', issuedBy: 'IRS', status: 'available', uploadedAt: '2025-03-10' }
+];
+
+// quick demo alerts and compliance messages
+export const alerts = [
+  { id: 'A-1', level: 'info', title: 'Margin reminder', body: 'Free margin is getting low on ACC-9981. Consider reducing position size or depositing funds.' },
+  { id: 'A-2', level: 'critical', title: 'KYC pending', body: 'Address verification pending — withdrawals may be delayed.' }
+];
+
+export const openPositions = positions;
+
+export default { user, accounts, kpis, timeseries, monthlyBars, topInstruments, instruments, transactions, notifications, markets, positions, openPositions, funds, documents, alerts, orders };
 

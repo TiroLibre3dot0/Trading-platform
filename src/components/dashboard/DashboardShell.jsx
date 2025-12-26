@@ -3,15 +3,15 @@ import React, { useState } from 'react'
 import mock from '../../mock/userDashboardMock'
 import TradePanel from './panels/TradePanel'
 import PositionsPanel from './panels/PositionsPanel'
+import OrdersPanel from './panels/OrdersPanel'
 import FundsPanel from './panels/FundsPanel'
 import TransactionsPanel from './panels/TransactionsPanel'
 import DocumentsPanel from './panels/DocumentsPanel'
 import StatementsPanel from './panels/StatementsPanel'
-import MarketsPanel from './panels/MarketsPanel.fixed'
+import MarketsPanel from './panels/MarketsPanel'
 import NotificationsPanel from '../ui/NotificationsPanel'
 import Modal from './Modal'
 import Drawer from './Drawer'
-import TransactionsList from './TransactionsList'
 import QuickActions from './QuickActions.fixed'
 
 export default function DashboardShell(){
@@ -32,7 +32,36 @@ export default function DashboardShell(){
 
   const renderMain = ()=>{
     // default dashboard main content; navigation handled by AppShell
-    return <TradePanel accounts={mock.accounts} onPlaceOrder={(o)=>{ alert('Order placed (mock)'); console.log(o); }} />
+    return (
+      <div className="space-y-4 min-w-0">
+        <TradePanel accounts={mock.accounts} onPlaceOrder={(o)=>{ alert('Order placed (mock)'); console.log(o); }} />
+
+        <div className="grid lg:grid-cols-2 gap-4">
+          <div className="col-span-1">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-96 lg:h-[480px] overflow-hidden">
+              <div className="text-lg font-semibold mb-2">Markets</div>
+              <div className="h-full overflow-auto">
+                <MarketsPanel markets={mock.markets} onTrade={(m,side,price)=>openModal('trade',{...m,side,price})} onAction={(type,payload)=>openModal(type,payload)} />
+              </div>
+            </div>
+          </div>
+
+          <div className="col-span-1">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-96 lg:h-[480px] overflow-hidden">
+              <div className="text-lg font-semibold mb-2">Recent Transactions</div>
+              <div className="h-full overflow-auto">
+                <TransactionsPanel transactions={mock.transactions} onRowClick={t=>openDrawer({type:'tx', item:t})} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <PositionsPanel positions={mock.openPositions || mock.positions} onRowClick={p=>openDrawer({type:'position', item:p})} />
+          <OrdersPanel orders={mock.orders || []} onRowClick={o=>openDrawer({type:'order', item:o})} />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -49,10 +78,7 @@ export default function DashboardShell(){
           </div>
 
           <div className="w-96 flex flex-col gap-4 min-w-0">
-            <div className="h-64">
-              <MarketsPanel markets={mock.markets} onTrade={(m,side,price)=>openModal('trade',{...m,side,price})} onAction={(type,payload)=>openModal(type,payload)} />
-            </div>
-            <TransactionsList items={mock.transactions} onRowClick={t=>openDrawer({type:'tx', item:t})} />
+            <NotificationsPanel items={notifications} open={notificationsOpen} onClose={()=>setNotificationsOpen(false)} />
             <QuickActions onAction={onQuickAction} />
           </div>
         </div>

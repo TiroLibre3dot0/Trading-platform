@@ -16,12 +16,10 @@ export default function AppShell(){
     setPrimarySelection(id);
     const map:any = {
       trade: '/trade',
-      markets: '/markets',
       open: '/open-positions',
       closed: '/closed-positions',
       funds: '/funds',
-      withdrawals: '/withdrawals',
-      transactions: '/transactions',
+      social: '/social',
       support: '/support'
     };
     const p = map[id] || '/dashboard';
@@ -31,13 +29,10 @@ export default function AppShell(){
   const handleSecondarySelect = (key:any) => {
     setSecondarySelection(key);
     const normalized = (''+key).toLowerCase();
-    if (normalized.includes('overview')) navigate('/dashboard');
-    else if (normalized.includes('premium')) navigate('/premium');
-    else if (normalized.includes('social')) navigate('/social');
+    if (normalized.includes('profile')) navigate('/profile');
     else if (normalized.includes('document')) navigate('/documents');
-    else if (normalized.includes('statement')) navigate('/statements');
-    else if (normalized.includes('profile')) navigate('/profile');
     else if (normalized.includes('security')) navigate('/security');
+    else if (normalized.includes('premium')) navigate('/premium');
   };
 
   const handleMenuToggle = () => {

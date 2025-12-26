@@ -12,17 +12,26 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
   };
 
   return (
-    <div className="h-screen bg-slate-950 text-slate-200 overflow-hidden">
-      <TopNavbar selectedAccountId={selectedAccount} onAccountChange={setSelectedAccount} onSettings={onSettings || (()=>{})} onMenuToggle={handleMenuToggle} />
+    <div className="h-screen bg-theme-background text-theme-primary overflow-hidden">
+      <TopNavbar selectedAccountId={selectedAccount} onAccountChange={setSelectedAccount} onMenuToggle={handleMenuToggle} />
 
-      <div className="h-[calc(100vh-64px)] flex overflow-hidden">
+      <div className="h-[calc(100vh-72px)] flex overflow-hidden relative">
         <div className="flex" style={{minWidth:0}}>
-          <PrimarySidebar collapsed={menuCollapsed} active={primarySelection} onSelect={setPrimarySelection} onToggleMenu={handleMenuToggle} />
+          <PrimarySidebar collapsed={menuCollapsed || secondaryOpen} active={primarySelection} onSelect={setPrimarySelection} onToggleMenu={handleMenuToggle} secondaryOpen={secondaryOpen} />
           <SecondarySidebar open={secondaryOpen} onClose={() => { setSecondaryOpen(false); setMenuCollapsed(false); }} active={secondarySelection} onSelect={setSecondarySelection} />
         </div>
 
-        <main className="flex-1 p-4 overflow-hidden" style={{minWidth:0}}>
-          {children}
+        <main className="flex-1 overflow-hidden transition-all duration-300 relative" style={{minWidth:0}}>
+          <div className="h-full p-6 relative z-0">
+            {children}
+          </div>
+          {/* Overlay for secondary sidebar */}
+          {secondaryOpen && (
+            <div 
+              className="absolute inset-0 bg-black/5 backdrop-blur-[0.5px] z-20"
+              onClick={() => { setSecondaryOpen(false); setMenuCollapsed(false); }}
+            />
+          )}
         </main>
       </div>
     </div>
