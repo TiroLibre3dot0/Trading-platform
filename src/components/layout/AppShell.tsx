@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../dashboard/DashboardLayout';
 import SettingsSlideover from './SettingsSlideover';
+import { DemoProvider, useDemo } from '../../context/DemoContext';
+import DemoNarrativa from '../demo/DemoNarrativa';
+
+// Component to render DemoNarrativa with access to demo context
+function DemoNarrativaWrapper() {
+  const { showDemo } = useDemo();
+  return <DemoNarrativa isOpen={showDemo} />;
+}
 
 export default function AppShell(){
   const navigate = useNavigate();
@@ -40,8 +48,10 @@ export default function AppShell(){
     setSecondaryOpen(v => !v);
   };
 
+  // handleDemoStart is now handled by the DemoContext in the sidebar
+
   return (
-    <>
+    <DemoProvider>
       <DashboardLayout
         menuCollapsed={menuCollapsed}
         setMenuCollapsed={setMenuCollapsed}
@@ -63,7 +73,8 @@ export default function AppShell(){
         </div>
       </DashboardLayout>
 
+      <DemoNarrativaWrapper />
       <SettingsSlideover open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-    </>
+    </DemoProvider>
   );
 }

@@ -49,7 +49,7 @@ export default function MarketsPanel({ markets = [], onTrade, onAction }){
   const fmt = (v) => (typeof v === 'number' ? v.toLocaleString(undefined, { maximumFractionDigits: 4 }) : v);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col h-full">
+    <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col h-full" data-tour="market-watch">
       <div className="flex items-center justify-between mb-2">
         <div className="text-slate-100 font-semibold">Markets / MetaTrade Sample</div>
         <div className="text-xs text-slate-400">Live quotes</div>

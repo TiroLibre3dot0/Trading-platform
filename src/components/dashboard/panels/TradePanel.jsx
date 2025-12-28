@@ -7,7 +7,7 @@ export default function TradePanel({ accounts, onPlaceOrder }) {
   const [account, setAccount] = useState(accounts?.[0]?.id || '');
 
   return (
-    <div className="bg-theme-primary border border-theme-secondary rounded p-4 h-full flex flex-col">
+    <div className="bg-theme-primary border border-theme-secondary rounded p-4 h-full flex flex-col" data-tour="trading-panel">
       <div className="text-lg font-semibold mb-3 text-theme-primary">New Order</div>
       <div className="grid grid-cols-2 gap-3">
         <label className="text-xs text-theme-secondary uppercase tracking-wide">Account</label>

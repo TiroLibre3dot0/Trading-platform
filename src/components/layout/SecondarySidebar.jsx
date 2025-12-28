@@ -103,7 +103,7 @@ export default function SecondarySidebar({ open, onClose, active, onSelect }) {
   const statusConfig = getStatusBadge(mock.user.status);
 
   return (
-    <aside className={`bg-theme-primary border-r border-theme-secondary p-0 flex flex-col transition-all duration-300 ${open ? 'w-64 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-4 overflow-hidden'}`}>
+    <aside className={`bg-theme-primary border-r border-theme-secondary p-0 flex flex-col transition-all duration-300 ${open ? 'w-64 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-4 overflow-hidden'}`} data-tour="navigator">
 
       {/* User Identity Block */}
       <div className="p-4 bg-theme-secondary/30">

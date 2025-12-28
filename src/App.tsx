@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import AppShell from './components/layout/AppShell'
-import UserDashboard from './pages/UserDashboard'
 import Login from './pages/Login'
 import PremiumRewardsPage from './pages/PremiumRewardsPage'
 import SocialTradingPage from './pages/SocialTradingPage'
@@ -19,7 +18,6 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<AppShell />}>
-          <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/premium" element={<PremiumRewardsPage />} />
           <Route path="/social" element={<SocialTradingPage />} />
           <Route path="/trade" element={<PlaceholderPage title="Negotiate" />} />
@@ -32,7 +30,7 @@ export default function App() {
           <Route path="/profile" element={<PlaceholderPage title="Profile & KYC" />} />
           <Route path="/security" element={<PlaceholderPage title="Security" />} />
         </Route>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/trade" replace />} />
       </Routes>
     </BrowserRouter>
   )

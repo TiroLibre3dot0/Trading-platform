@@ -87,5 +87,5 @@ export default function TradeChart({ data, bids, asks }: { data: Point[]; bids?:
     if(asksRef.current && asks) asksRef.current.setData(asks.map(([p,sz])=>({ time: Math.floor(Date.now()/1000), value: p, volume: sz })) as any);
   }, [data, bids, asks]);
 
-  return <div ref={ref} className="w-full" />;
+  return <div ref={ref} className="w-full" data-tour="chart-toolbar" />;
 }

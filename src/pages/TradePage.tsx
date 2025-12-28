@@ -1,30 +1,30 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { LineChart, Activity, Grid3X3, ZoomIn, ZoomOut, Play, RotateCcw, TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { LineChart, Activity, Grid3X3, ZoomIn, ZoomOut, Play, RotateCcw, TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
 import { useAppPreferences } from '../context/AppPreferencesContext';
 
 // Mock market data
 const mock = {
   markets: [
-    { symbol: 'EUR/USD', name: 'Euro vs US Dollar', price: 1.0825, change: 0.15 },
-    { symbol: 'GBP/USD', name: 'British Pound vs US Dollar', price: 1.2750, change: -0.25 },
-    { symbol: 'USD/JPY', name: 'US Dollar vs Japanese Yen', price: 153.45, change: 0.35 },
-    { symbol: 'USD/CHF', name: 'US Dollar vs Swiss Franc', price: 0.8750, change: -0.12 },
-    { symbol: 'AUD/USD', name: 'Australian Dollar vs US Dollar', price: 0.6525, change: 0.08 },
-    { symbol: 'USD/CAD', name: 'US Dollar vs Canadian Dollar', price: 1.3525, change: -0.18 },
-    { symbol: 'NZD/USD', name: 'New Zealand Dollar vs US Dollar', price: 0.5950, change: 0.22 },
-    { symbol: 'EUR/GBP', name: 'Euro vs British Pound', price: 0.8475, change: 0.41 },
-    { symbol: 'EUR/JPY', name: 'Euro vs Japanese Yen', price: 166.25, change: 0.50 },
-    { symbol: 'GBP/JPY', name: 'British Pound vs Japanese Yen', price: 196.15, change: 0.10 },
-    { symbol: 'BTC/USD', name: 'Bitcoin vs US Dollar', price: 45230.50, change: 2.15 },
-    { symbol: 'ETH/USD', name: 'Ethereum vs US Dollar', price: 2456.75, change: -1.25 },
-    { symbol: 'XAU/USD', name: 'Gold vs US Dollar', price: 2056.30, change: 0.75 },
-    { symbol: 'XAG/USD', name: 'Silver vs US Dollar', price: 23.45, change: -0.30 },
-    { symbol: 'USOIL', name: 'Crude Oil', price: 78.25, change: 1.85 },
-    { symbol: 'SPX500', name: 'S&P 500 Index', price: 4756.50, change: -0.45 },
-    { symbol: 'NDX100', name: 'Nasdaq 100', price: 16890.25, change: 0.95 },
-    { symbol: 'DAX30', name: 'DAX 30 Index', price: 17654.80, change: 0.65 },
-    { symbol: 'FTSE100', name: 'FTSE 100 Index', price: 8123.45, change: -0.25 },
-    { symbol: 'NIKKEI', name: 'Nikkei 225', price: 33245.60, change: 1.15 }
+    { symbol: 'EUR/USD', name: 'Euro vs US Dollar', price: 1.0825, bid: 1.0823, ask: 1.0827, change: 0.15, changePct: 0.15 },
+    { symbol: 'GBP/USD', name: 'British Pound vs US Dollar', price: 1.2750, bid: 1.2748, ask: 1.2752, change: -0.25, changePct: -0.25 },
+    { symbol: 'USD/JPY', name: 'US Dollar vs Japanese Yen', price: 153.45, bid: 153.42, ask: 153.48, change: 0.35, changePct: 0.35 },
+    { symbol: 'USD/CHF', name: 'US Dollar vs Swiss Franc', price: 0.8750, bid: 0.8748, ask: 0.8752, change: -0.12, changePct: -0.12 },
+    { symbol: 'AUD/USD', name: 'Australian Dollar vs US Dollar', price: 0.6525, bid: 0.6523, ask: 0.6527, change: 0.08, changePct: 0.08 },
+    { symbol: 'USD/CAD', name: 'US Dollar vs Canadian Dollar', price: 1.3525, bid: 1.3523, ask: 1.3527, change: -0.18, changePct: -0.18 },
+    { symbol: 'NZD/USD', name: 'New Zealand Dollar vs US Dollar', price: 0.5950, bid: 0.5948, ask: 0.5952, change: 0.22, changePct: 0.22 },
+    { symbol: 'EUR/GBP', name: 'Euro vs British Pound', price: 0.8475, bid: 0.8473, ask: 0.8477, change: 0.41, changePct: 0.41 },
+    { symbol: 'EUR/JPY', name: 'Euro vs Japanese Yen', price: 166.25, bid: 166.22, ask: 166.28, change: 0.50, changePct: 0.50 },
+    { symbol: 'GBP/JPY', name: 'British Pound vs Japanese Yen', price: 196.15, bid: 196.12, ask: 196.18, change: 0.10, changePct: 0.10 },
+    { symbol: 'BTC/USD', name: 'Bitcoin vs US Dollar', price: 45230.50, bid: 45225.00, ask: 45236.00, change: 2.15, changePct: 2.15 },
+    { symbol: 'ETH/USD', name: 'Ethereum vs US Dollar', price: 2456.75, bid: 2454.50, ask: 2459.00, change: -1.25, changePct: -1.25 },
+    { symbol: 'XAU/USD', name: 'Gold vs US Dollar', price: 2056.30, bid: 2055.80, ask: 2056.80, change: 0.75, changePct: 0.75 },
+    { symbol: 'XAG/USD', name: 'Silver vs US Dollar', price: 23.45, bid: 23.42, ask: 23.48, change: -0.30, changePct: -0.30 },
+    { symbol: 'USOIL', name: 'Crude Oil', price: 78.25, bid: 78.22, ask: 78.28, change: 1.85, changePct: 1.85 },
+    { symbol: 'SPX500', name: 'S&P 500 Index', price: 4756.50, bid: 4755.00, ask: 4758.00, change: -0.45, changePct: -0.45 },
+    { symbol: 'NDX100', name: 'Nasdaq 100', price: 16890.25, bid: 16885.00, ask: 16895.50, change: 0.95, changePct: 0.95 },
+    { symbol: 'DAX30', name: 'DAX 30 Index', price: 17654.80, bid: 17650.00, ask: 17659.60, change: 0.65, changePct: 0.65 },
+    { symbol: 'FTSE100', name: 'FTSE 100 Index', price: 8123.45, bid: 8120.00, ask: 8126.90, change: -0.25, changePct: -0.25 },
+    { symbol: 'NIKKEI', name: 'Nikkei 225', price: 33245.60, bid: 33240.00, ask: 33251.20, change: 1.15, changePct: 1.15 }
   ]
 };
 
@@ -52,7 +52,7 @@ const Toast = ({ message, type, onClose }: any) => (
 
 // MetaTrader-style components
 const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd }: any) => (
-  <div className="bg-theme-secondary border-b border-theme-primary px-3 py-2 flex items-center justify-between flex-wrap gap-2 mobile-toolbar-compact">
+  <div className="bg-theme-secondary border-b border-theme-primary px-3 py-2 flex items-center justify-between flex-wrap gap-2 mobile-toolbar-compact" data-tour="chart-toolbar">
     <div className="flex items-center gap-2 mobile-text-center">
       <span className="font-semibold text-theme-primary">{symbol}</span>
       <span className="text-sm text-theme-secondary hidden sm:inline">EURUSD</span>
@@ -96,8 +96,8 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd }: any) 
   </div>
 );
 
-const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect }: any) => (
-  <div className="bg-theme-secondary border-r border-theme-primary flex flex-col h-full">
+const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradingPanel, onSetOrderSide }: any) => (
+  <div className="bg-theme-secondary border-r border-theme-primary flex flex-col h-full" data-tour="market-watch">
     <div className="px-2 py-1 border-b border-theme-primary">
       <div className="text-xs font-semibold text-theme-primary">Market Watch</div>
     </div>
@@ -119,8 +119,42 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect }: any) => (
               className={`cursor-pointer hover:bg-theme-tertiary ${selectedSymbol === inst.symbol ? 'bg-theme-primary' : ''}`}
             >
               <td className="px-1 py-1 text-theme-primary text-xs">{inst.symbol}</td>
-              <td className="px-1 py-1 text-right text-theme-secondary text-xs">{inst.bid}</td>
-              <td className="px-1 py-1 text-right text-theme-secondary text-xs">{inst.ask}</td>
+              <td className="px-1 py-1 text-right text-theme-secondary text-xs">
+                <div className="flex items-center justify-end gap-2">
+                  <span className="min-w-[50px] text-right">{inst.bid}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSymbolSelect(inst.symbol);
+                      onSetOrderSide('sell');
+                      onOpenTradingPanel();
+                    }}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
+                    title={`Sell ${inst.symbol}`}
+                  >
+                    <TrendingDown className="w-3 h-3" />
+                    SELL
+                  </button>
+                </div>
+              </td>
+              <td className="px-1 py-1 text-right text-theme-secondary text-xs">
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSymbolSelect(inst.symbol);
+                      onSetOrderSide('buy');
+                      onOpenTradingPanel();
+                    }}
+                    className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
+                    title={`Buy ${inst.symbol}`}
+                  >
+                    <TrendingUp className="w-3 h-3" />
+                    BUY
+                  </button>
+                  <span className="min-w-[50px] text-right">{inst.ask}</span>
+                </div>
+              </td>
               <td className={`px-1 py-1 text-right text-xs ${inst.changePct >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                 {inst.changePct >= 0 ? '+' : ''}{inst.changePct}%
               </td>
@@ -133,7 +167,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect }: any) => (
 );
 
 const Navigator = () => (
-  <div className="bg-theme-secondary border-r border-theme-primary flex flex-col h-full">
+  <div className="bg-theme-secondary border-r border-theme-primary flex flex-col h-full" data-tour="navigator">
     <div className="p-2 border-b border-theme-primary">
       <div className="text-sm font-semibold text-theme-primary">Navigator</div>
     </div>
@@ -395,15 +429,22 @@ const MTChart = ({ symbol, timeframe }: any) => {
 };
 
 // Trading Panel Component
-const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance }: any) => {
+const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePanel, orderSide }: any) => {
   const [orderType, setOrderType] = useState('market');
-  const [side, setSide] = useState('buy');
+  const [side, setSide] = useState(orderSide || 'buy');
   const [volume, setVolume] = useState('0.01');
   const [stopLoss, setStopLoss] = useState('');
   const [takeProfit, setTakeProfit] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
   const [toast, setToast] = useState<any>(null);
   const [priceAnimation, setPriceAnimation] = useState(false);
+
+  // Update side when orderSide prop changes
+  useEffect(() => {
+    if (orderSide) {
+      setSide(orderSide);
+    }
+  }, [orderSide]);
 
   // Animate price changes
   useEffect(() => {
@@ -480,9 +521,9 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance }: any) => 
 
       <div className="bg-theme-secondary border-l border-theme-primary flex flex-col animate-fade-in">
         {/* Symbol & Price Header */}
-        <div className="px-3 py-2 border-b border-theme-primary">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold text-sm text-theme-primary">{symbol}</span>
+        <div className="px-3 py-2 border-b border-theme-primary flex items-center justify-between">
+          <span className="font-semibold text-sm text-theme-primary">{symbol}</span>
+          <div className="flex items-center gap-2">
             <div className="text-right">
               <div className={`text-lg font-bold text-theme-primary transition-all duration-300 ${priceAnimation ? 'animate-price-update' : ''}`}>
                 {currentPrice}
@@ -491,6 +532,13 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance }: any) => 
                 +0.15%
               </div>
             </div>
+            <button
+              onClick={onTogglePanel}
+              className="p-1 hover:bg-theme-tertiary rounded transition-colors group"
+              title="Hide Trading Panel"
+            >
+              <XCircle className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary" />
+            </button>
           </div>
         </div>
 
@@ -736,8 +784,14 @@ export default function TradePage(){
   const [symbol, setSymbol] = useState(instruments[0]?.symbol || 'EUR/USD');
   const [timeframe, setTimeframe] = useState('H1');
   const [showMarketWatch, setShowMarketWatch] = useState(true);
-  const [showNavigator, setShowNavigator] = useState(true);
+  const [showNavigator, setShowNavigator] = useState(false);
   const [showTerminal, setShowTerminal] = useState(true);
+  const [showTradingPanel, setShowTradingPanel] = useState(() => {
+    // Load from localStorage, default to true
+    const saved = localStorage.getItem('tradingPanelCollapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [selectedOrderSide, setSelectedOrderSide] = useState<'buy' | 'sell'>('buy');
   
   // Trading state
   const [positions, setPositions] = useState<any[]>([]);
@@ -762,6 +816,21 @@ export default function TradePage(){
     }
   };
 
+  const toggleTradingPanel = () => {
+    const newState = !showTradingPanel;
+    setShowTradingPanel(newState);
+    localStorage.setItem('tradingPanelCollapsed', JSON.stringify(newState));
+  };
+
+  const openTradingPanel = () => {
+    setShowTradingPanel(true);
+    localStorage.setItem('tradingPanelCollapsed', JSON.stringify(true));
+  };
+
+  const setOrderSide = (side: 'buy' | 'sell') => {
+    setSelectedOrderSide(side);
+  };
+
   const handleOrderPlaced = (order: any) => {
     // Add position to portfolio
     const newPosition = {
@@ -776,6 +845,7 @@ export default function TradePage(){
     const orderValue = order.volume * order.price * 100000; // Standard lot size
     setBalance(prev => prev - (orderValue * 0.01)); // 1% margin requirement
   };
+
 
   // Update P&L in real-time
   useEffect(() => {
@@ -798,11 +868,11 @@ export default function TradePage(){
   return (
     <div className="h-full bg-theme-background text-theme-primary flex flex-col">
       {/* MetaTrader-style toolbar */}
-      <Toolbar 
-        symbol={symbol} 
-        timeframe={timeframe} 
+      <Toolbar
+        symbol={symbol}
+        timeframe={timeframe}
         onTimeframeChange={setTimeframe}
-        onIndicatorAdd={() => {}}
+        onIndicatorAdd={() => setShowNavigator(!showNavigator)}
       />
       
       {/* Main content area */}
@@ -810,11 +880,13 @@ export default function TradePage(){
         {/* Left panels - hidden on mobile by default */}
         <div className="flex">
           {showMarketWatch && (
-            <div style={{width: '240px'}} className="animate-section-in">
+            <div style={{width: '450px'}} className="animate-section-in">
               <MarketWatch 
                 instruments={instruments} 
                 selectedSymbol={symbol} 
-                onSymbolSelect={handleSymbolChange} 
+                onSymbolSelect={handleSymbolChange}
+                onOpenTradingPanel={openTradingPanel}
+                onSetOrderSide={setOrderSide}
               />
             </div>
           )}
@@ -835,17 +907,35 @@ export default function TradePage(){
             {showTerminal && <Terminal positions={positions} orders={[]} history={[]} />}
           </div>
           
-          {/* Trading Panel - full width on mobile */}
-          <div style={{width: '300px'}} className="transition-all duration-300">
-            <TradingPanel 
-              symbol={symbol} 
-              currentPrice={currentPrice} 
-              onOrderPlaced={handleOrderPlaced}
-              balance={balance}
-            />
-          </div>
+          {/* Trading Panel - collapsible */}
+          {showTradingPanel && (
+            <div style={{width: '300px'}} className="transition-all duration-300 animate-slide-in-right" data-tour="trading-panel">
+              <TradingPanel 
+                symbol={symbol} 
+                currentPrice={currentPrice} 
+                onOrderPlaced={handleOrderPlaced}
+                balance={balance}
+                onTogglePanel={toggleTradingPanel}
+                orderSide={selectedOrderSide}
+              />
+            </div>
+          )}
+          
+          {/* Toggle button when panel is collapsed */}
+          {!showTradingPanel && (
+            <div className="flex items-center">
+              <button
+                onClick={toggleTradingPanel}
+                className="bg-theme-secondary border-l border-theme-primary px-2 py-4 hover:bg-theme-tertiary transition-all duration-200 group"
+                title="Show Trading Panel"
+              >
+                <TrendingUp className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary transition-colors" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
     </div>
   );
 }

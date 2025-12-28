@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Zap, BarChart2, TrendingUp, Wallet, List, Activity, Star, Sun, Moon } from 'lucide-react';
+import { User, Zap, BarChart2, TrendingUp, Wallet, List, Activity, Star, Sun, Moon, HelpCircle } from 'lucide-react';
 import { useAppPreferences } from '../../context/AppPreferencesContext';
 
 const IconWrap = ({ children }) => (
@@ -16,21 +16,27 @@ export default function PrimarySidebar({ collapsed, active, onSelect, onToggleMe
     { id: 'closed', label: 'Closed Positions', icon: TrendingUp },
     { id: 'funds', label: 'Funds', icon: Wallet },
     { id: 'social', label: 'Social Trading', icon: Star },
+    { id: 'tutorial', label: 'Tutorial', icon: HelpCircle, disabled: true, comingSoon: true },
     { id: 'support', label: 'Support', icon: Activity }
   ];
 
   return (
     <aside className={`bg-theme-primary border-r border-theme-secondary flex flex-col ${collapsed || secondaryOpen ? 'w-20' : 'w-64'} transition-all duration-300 ease-in-out`}>
       <div className="p-3 flex items-center justify-between">
-        {!(collapsed || secondaryOpen) && <div className="text-xs text-theme-secondary uppercase tracking-wide">Navigation</div>}
+        <div className="text-xs text-theme-secondary"> </div>
         <div className="text-xs text-theme-secondary"> </div>
       </div>
 
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-auto panel-scroll relative">
         {items.map(it => (
-          <button key={it.id} onClick={() => (it.action ? it.action() : onSelect && onSelect(it.id))} className={`w-full flex items-center gap-3 rounded px-3 py-2 text-left hover:bg-theme-secondary transition-colors ${active===it.id ? 'bg-blue-600/10 border-r-2 border-blue-600' : ''}`}>
-            <IconWrap><it.icon className="w-5 h-5 text-theme-secondary" /></IconWrap>
-            {!(collapsed || secondaryOpen) && <span className={`text-theme-secondary ${active===it.id ? 'text-blue-400 font-medium' : ''}`}>{it.label}</span>}
+          <button key={it.id} onClick={() => (it.action ? it.action() : onSelect && onSelect(it.id))} disabled={it.disabled} className={`w-full flex items-center gap-3 rounded px-3 py-2 text-left transition-all duration-200 ${it.disabled ? 'cursor-not-allowed' : 'hover:bg-theme-secondary'} ${active===it.id ? 'bg-blue-600/10 border-r-2 border-blue-600' : ''}`}>
+            <IconWrap><it.icon className={`w-5 h-5 ${it.disabled ? 'text-theme-secondary' : 'text-theme-secondary'}`} /></IconWrap>
+            {!(collapsed || secondaryOpen) && (
+              <div className="flex flex-col">
+                <span className={`${it.disabled ? 'text-theme-secondary' : active===it.id ? 'text-blue-400 font-medium' : 'text-theme-secondary'}`}>{it.label}</span>
+                {it.comingSoon && <span className="text-xs text-theme-secondary/60">Coming soon</span>}
+              </div>
+            )}
           </button>
         ))}
       </nav>
