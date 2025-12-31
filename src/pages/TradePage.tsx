@@ -51,7 +51,7 @@ const Toast = ({ message, type, onClose }: any) => (
 );
 
 // MetaTrader-style components
-const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd }: any) => (
+const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarketWatchToggle }: any) => (
   <div className="bg-theme-secondary border-b border-theme-primary px-3 py-2 flex items-center justify-between flex-wrap gap-2 mobile-toolbar-compact" data-tour="chart-toolbar">
     <div className="flex items-center gap-2 mobile-text-center">
       <span className="font-semibold text-theme-primary">{symbol}</span>
@@ -71,6 +71,9 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd }: any) 
     </div>
 
     <div className="flex items-center gap-1 order-2 sm:order-3 mobile-gap-2">
+      <button onClick={onMarketWatchToggle} className="p-1 bg-theme-tertiary rounded hover:bg-theme-primary transition-all duration-200 transform hover:scale-110 hover-lift" title="Toggle Market Watch">
+        <TrendingUp className="w-4 h-4" />
+      </button>
       <button className="p-1 bg-theme-tertiary rounded hover:bg-theme-primary transition-all duration-200 transform hover:scale-110 hover-lift hidden sm:inline" title="Line Study">
         <LineChart className="w-4 h-4" />
       </button>
@@ -783,7 +786,7 @@ export default function TradePage(){
   const instruments = useMemo(() => mock.markets.slice(0, 20), []);
   const [symbol, setSymbol] = useState(instruments[0]?.symbol || 'EUR/USD');
   const [timeframe, setTimeframe] = useState('H1');
-  const [showMarketWatch, setShowMarketWatch] = useState(true);
+  const [showMarketWatch, setShowMarketWatch] = useState(false);
   const [showNavigator, setShowNavigator] = useState(false);
   const [showTerminal, setShowTerminal] = useState(true);
   const [showTradingPanel, setShowTradingPanel] = useState(() => {
@@ -873,6 +876,7 @@ export default function TradePage(){
         timeframe={timeframe}
         onTimeframeChange={setTimeframe}
         onIndicatorAdd={() => setShowNavigator(!showNavigator)}
+        onMarketWatchToggle={() => setShowMarketWatch(!showMarketWatch)}
       />
       
       {/* Main content area */}
@@ -909,7 +913,7 @@ export default function TradePage(){
           
           {/* Trading Panel - collapsible */}
           {showTradingPanel && (
-            <div style={{width: '300px'}} className="transition-all duration-300 animate-slide-in-right" data-tour="trading-panel">
+            <div style={{width: '300px'}} className="mobile-full-width transition-all duration-300 animate-slide-in-right" data-tour="trading-panel">
               <TradingPanel 
                 symbol={symbol} 
                 currentPrice={currentPrice} 

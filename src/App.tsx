@@ -4,6 +4,7 @@ import AppShell from './components/layout/AppShell'
 import Login from './pages/Login'
 import PremiumRewardsPage from './pages/PremiumRewardsPage'
 import SocialTradingPage from './pages/SocialTradingPage'
+import TradePage from './pages/TradePage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import { useAppPreferences } from './context/AppPreferencesContext'
 
@@ -20,7 +21,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route path="/premium" element={<PremiumRewardsPage />} />
           <Route path="/social" element={<SocialTradingPage />} />
-          <Route path="/trade" element={<PlaceholderPage title="Negotiate" />} />
+          <Route path="/trade" element={<TradePage />} />
           <Route path="/open-positions" element={<PlaceholderPage title="Open Positions" />} />
           <Route path="/closed-positions" element={<PlaceholderPage title="Closed Positions" />} />
           <Route path="/funds" element={<PlaceholderPage title="Funds" />} />

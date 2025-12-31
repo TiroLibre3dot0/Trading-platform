@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { accounts, user } from '../../mock/dashboardMock';
 import mock from '../../mock/userDashboardMock';
 import { useAppPreferences } from '../../context/AppPreferencesContext';
-import { Bell, User, CheckCircle, AlertTriangle, TrendingUp, Shield, ChevronDown, Eye, EyeOff, Crown, Star } from 'lucide-react';
+import { Bell, User, CheckCircle, AlertTriangle, TrendingUp, Shield, ChevronDown, Eye, EyeOff, Crown, Star, Menu } from 'lucide-react';
 
 const UserAvatar = ({ name }) => (
   <div className="h-9 w-9 rounded-full bg-slate-700 flex items-center justify-center text-sm font-semibold text-white">{name.split(' ')[0][0]}</div>
@@ -155,10 +155,19 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
             <span>{user.status}</span>
           </div> */}
         </div>
+
+        {/* Hamburger Menu Button - Mobile */}
+        <button
+          onClick={onMenuToggle}
+          className="md:hidden p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 group"
+          aria-label="Toggle menu"
+        >
+          <Menu className="w-5 h-5 text-theme-secondary group-hover:text-theme-primary transition-colors" />
+        </button>
       </div>
 
       {/* Center section - Financial Metrics */}
-      <div className="flex-1 flex justify-center">
+      <div className="flex-1 md:flex justify-center hidden">
         <div className="flex items-center gap-16">
         {/* Toggle Numbers Visibility */}
         <button
