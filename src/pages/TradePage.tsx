@@ -140,8 +140,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                     onClick={(e) => {
                       e.stopPropagation();
                       onSymbolSelect(inst.symbol);
-                      onSetOrderSide('sell');
-                      onOpenTradingPanel();
+                      openQuickTrade(inst.symbol, 'sell');
                     }}
                     className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
                     title={`Sell ${inst.symbol}`}
@@ -157,8 +156,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                     onClick={(e) => {
                       e.stopPropagation();
                       onSymbolSelect(inst.symbol);
-                      onSetOrderSide('buy');
-                      onOpenTradingPanel();
+                      openQuickTrade(inst.symbol, 'buy');
                     }}
                     className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
                     title={`Buy ${inst.symbol}`}
@@ -728,6 +726,169 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
   );
 };
 
+// Quick Trade Panel - Simplified trading interface for mobile
+const QuickTradePanel = ({ symbol, currentPrice, onOrderPlaced, balance, onClose, side }: any) => {
+  const [orderType, setOrderType] = useState('market');
+  const [volume, setVolume] = useState('0.01');
+  const [stopLoss, setStopLoss] = useState('');
+  const [takeProfit, setTakeProfit] = useState('');
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [toast, setToast] = useState<any>(null);
+
+  const handleOrderSubmit = async () => {
+    setIsExecuting(true);
+    
+    // Simulate order execution
+    setTimeout(() => {
+      const order = {
+        id: Date.now(),
+        symbol,
+        side,
+        type: orderType,
+        volume: parseFloat(volume),
+        price: currentPrice,
+        stopLoss: stopLoss ? parseFloat(stopLoss) : null,
+        takeProfit: takeProfit ? parseFloat(takeProfit) : null,
+        timestamp: new Date()
+      };
+      
+      onOrderPlaced(order);
+      setIsExecuting(false);
+      setToast({ message: `${side.toUpperCase()} order placed for ${symbol}`, type: 'success' });
+      
+      // Close after successful order
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    }, 1000);
+  };
+
+  return (
+    <>
+      {/* Toast Notification */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
+
+      <div className="bg-theme-secondary border-l border-theme-primary flex flex-col animate-fade-in h-full">
+        {/* Header */}
+        <div className="px-3 py-2 border-b border-theme-primary flex items-center justify-between">
+          <span className="font-semibold text-sm text-theme-primary">{side.toUpperCase()} {symbol}</span>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-theme-tertiary rounded transition-colors group"
+            title="Close"
+          >
+            <XCircle className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary" />
+          </button>
+        </div>
+
+        {/* Current Price */}
+        <div className="px-3 py-2 border-b border-theme-primary text-center">
+          <div className="text-lg font-bold text-theme-primary">{currentPrice}</div>
+          <div className="text-xs text-green-400">+0.15%</div>
+        </div>
+
+        {/* Order Type */}
+        <div className="px-3 py-2 border-b border-theme-primary">
+          <div className="flex gap-1">
+            <button
+              onClick={() => setOrderType('market')}
+              className={`flex-1 py-2 px-2 rounded text-sm font-medium transition-all duration-200 ${orderType === 'market' ? 'bg-blue-600 text-white' : 'bg-theme-tertiary text-theme-secondary hover:bg-theme-primary'}`}
+            >
+              Market
+            </button>
+            <button
+              onClick={() => setOrderType('limit')}
+              className={`flex-1 py-2 px-2 rounded text-sm font-medium transition-all duration-200 ${orderType === 'limit' ? 'bg-blue-600 text-white' : 'bg-theme-tertiary text-theme-secondary hover:bg-theme-primary'}`}
+            >
+              Limit
+            </button>
+          </div>
+        </div>
+
+        {/* Volume */}
+        <div className="px-3 py-2 border-b border-theme-primary">
+          <label className="block text-sm font-medium text-theme-secondary mb-2">Volume (Lots)</label>
+          <div className="grid grid-cols-4 gap-1 mb-2">
+            {['0.01', '0.1', '1', '10'].map(size => (
+              <button
+                key={size}
+                onClick={() => setVolume(size)}
+                className={`py-2 px-1 rounded text-xs transition-all duration-200 ${volume === size ? 'bg-blue-600 text-white' : 'bg-theme-tertiary text-theme-secondary hover:bg-theme-primary'}`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+          <input
+            type="number"
+            value={volume}
+            onChange={(e) => setVolume(e.target.value)}
+            className="w-full px-2 py-2 bg-theme-tertiary border border-theme-primary rounded text-theme-primary text-sm"
+            step="0.01"
+            min="0.01"
+          />
+        </div>
+
+        {/* Stop Loss & Take Profit */}
+        <div className="px-3 py-2 border-b border-theme-primary">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-theme-secondary mb-1">Stop Loss</label>
+              <input
+                type="number"
+                value={stopLoss}
+                onChange={(e) => setStopLoss(e.target.value)}
+                placeholder="Optional"
+                className="w-full px-2 py-2 bg-theme-tertiary border border-theme-primary rounded text-theme-primary text-sm"
+                step="0.00001"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-theme-secondary mb-1">Take Profit</label>
+              <input
+                type="number"
+                value={takeProfit}
+                onChange={(e) => setTakeProfit(e.target.value)}
+                placeholder="Optional"
+                className="w-full px-2 py-2 bg-theme-tertiary border border-theme-primary rounded text-theme-primary text-sm"
+                step="0.00001"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Execute Button */}
+        <div className="px-3 py-4">
+          <button
+            onClick={handleOrderSubmit}
+            disabled={isExecuting}
+            className={`w-full py-3 rounded font-semibold text-sm transition-all duration-200 ${
+              side === 'buy' 
+                ? 'bg-green-600 hover:bg-green-500 text-white' 
+                : 'bg-red-600 hover:bg-red-500 text-white'
+            } ${isExecuting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isExecuting ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                Executing...
+              </div>
+            ) : (
+              `${side.toUpperCase()} ${symbol}`
+            )}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+};
+
 // Terminal Component for positions and orders
 const Terminal = ({ positions, orders, history }: any) => (
   <div className="bg-theme-secondary border-t border-theme-primary h-48 flex animate-fade-in">
@@ -820,10 +981,12 @@ export default function TradePage(){
   });
   const [selectedOrderSide, setSelectedOrderSide] = useState<'buy' | 'sell'>('buy');
   const [showChartFullscreen, setShowChartFullscreen] = useState(false);
-  const [mobileView, setMobileView] = useState<'marketWatch' | 'trading'>(() => {
+  const [mobileView, setMobileView] = useState<'marketWatch' | 'trading' | 'quickTrade'>(() => {
     // Default to market watch on mobile
     return window.innerWidth <= 768 ? 'marketWatch' : 'trading';
   });
+  const [quickTradeSymbol, setQuickTradeSymbol] = useState('');
+  const [quickTradeSide, setQuickTradeSide] = useState<'buy' | 'sell'>('buy');
   
   // Trading state
   const [positions, setPositions] = useState<any[]>([]);
@@ -854,9 +1017,10 @@ export default function TradePage(){
     localStorage.setItem('tradingPanelCollapsed', JSON.stringify(newState));
   };
 
-  const openTradingPanel = () => {
-    setShowTradingPanel(true);
-    localStorage.setItem('tradingPanelCollapsed', JSON.stringify(true));
+  const openQuickTrade = (symbol: string, side: 'buy' | 'sell') => {
+    setQuickTradeSymbol(symbol);
+    setQuickTradeSide(side);
+    setMobileView('quickTrade');
   };
 
   const setOrderSide = (side: 'buy' | 'sell') => {
@@ -921,6 +1085,17 @@ export default function TradePage(){
                 onSymbolSelect={handleSymbolChange}
                 onOpenTradingPanel={openTradingPanel}
                 onSetOrderSide={setOrderSide}
+              />
+            </div>
+          ) : mobileView === 'quickTrade' ? (
+            <div className="flex-1">
+              <QuickTradePanel 
+                symbol={quickTradeSymbol} 
+                currentPrice={instruments.find(inst => inst.symbol === quickTradeSymbol)?.price || currentPrice}
+                onOrderPlaced={handleOrderPlaced}
+                balance={balance}
+                onClose={() => setMobileView('marketWatch')}
+                side={quickTradeSide}
               />
             </div>
           ) : (
