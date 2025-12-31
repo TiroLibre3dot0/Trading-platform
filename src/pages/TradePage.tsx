@@ -104,8 +104,16 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarke
 
 const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradingPanel, onSetOrderSide }: any) => (
   <div className="bg-theme-secondary border-r border-theme-primary flex flex-col h-full" data-tour="market-watch">
-    <div className="px-2 py-1 border-b border-theme-primary">
+    <div className="px-2 py-1 border-b border-theme-primary flex items-center justify-between">
       <div className="text-xs font-semibold text-theme-primary">Market Watch</div>
+      {window.innerWidth <= 768 && (
+        <button
+          onClick={() => setMobileView('trading')}
+          className="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded font-semibold transition-all duration-200"
+        >
+          Trading Panel
+        </button>
+      )}
     </div>
     <div className="flex-1 overflow-auto">
       <table className="w-full text-xs">
@@ -528,7 +536,17 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
       <div className="bg-theme-secondary border-l border-theme-primary flex flex-col animate-fade-in">
         {/* Symbol & Price Header */}
         <div className="px-3 py-2 border-b border-theme-primary flex items-center justify-between">
-          <span className="font-semibold text-sm text-theme-primary">{symbol}</span>
+          <div className="flex items-center gap-2">
+            {window.innerWidth <= 768 && (
+              <button
+                onClick={() => setMobileView('marketWatch')}
+                className="px-2 py-1 bg-theme-tertiary hover:bg-theme-primary text-theme-secondary text-xs rounded transition-all duration-200"
+              >
+                ← Market Watch
+              </button>
+            )}
+            <span className="font-semibold text-sm text-theme-primary">{symbol}</span>
+          </div>
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div className={`text-lg font-bold text-theme-primary transition-all duration-300 ${priceAnimation ? 'animate-price-update' : ''}`}>
@@ -789,7 +807,10 @@ export default function TradePage(){
   const instruments = useMemo(() => mock.markets.slice(0, 20), []);
   const [symbol, setSymbol] = useState(instruments[0]?.symbol || 'EUR/USD');
   const [timeframe, setTimeframe] = useState('H1');
-  const [showMarketWatch, setShowMarketWatch] = useState(false);
+  const [showMarketWatch, setShowMarketWatch] = useState(() => {
+    // Show market watch by default on mobile
+    return window.innerWidth <= 768;
+  });
   const [showNavigator, setShowNavigator] = useState(false);
   const [showTerminal, setShowTerminal] = useState(true);
   const [showTradingPanel, setShowTradingPanel] = useState(() => {
@@ -799,6 +820,10 @@ export default function TradePage(){
   });
   const [selectedOrderSide, setSelectedOrderSide] = useState<'buy' | 'sell'>('buy');
   const [showChartFullscreen, setShowChartFullscreen] = useState(false);
+  const [mobileView, setMobileView] = useState<'marketWatch' | 'trading'>(() => {
+    // Default to market watch on mobile
+    return window.innerWidth <= 768 ? 'marketWatch' : 'trading';
+  });
   
   // Trading state
   const [positions, setPositions] = useState<any[]>([]);
@@ -886,10 +911,10 @@ export default function TradePage(){
       
       {/* Main content area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left panels - hidden on mobile by default */}
-        <div className="flex">
-          {showMarketWatch && (
-            <div style={{width: '450px'}} className="animate-section-in">
+        {/* Mobile view switching */}
+        {window.innerWidth <= 768 ? (
+          mobileView === 'marketWatch' ? (
+            <div className="flex-1">
               <MarketWatch 
                 instruments={instruments} 
                 selectedSymbol={symbol} 
@@ -898,51 +923,79 @@ export default function TradePage(){
                 onSetOrderSide={setOrderSide}
               />
             </div>
-          )}
-          {showNavigator && (
-            <div style={{width: '180px'}} className="animate-section-in">
-              <Navigator />
-            </div>
-          )}
-        </div>
-        
-        {/* Main chart area */}
-        <div className="flex-1 flex mobile-flex-col">
-          {/* Chart */}
-          <div className="flex-1 md:flex flex-col chart-container mobile-chart-responsive hidden">
-            <MTChart symbol={symbol} timeframe={timeframe} />
-            
-            {/* Terminal at bottom - compact on mobile */}
-            {showTerminal && <Terminal positions={positions} orders={[]} history={[]} />}
-          </div>
-          
-          {/* Trading Panel - collapsible */}
-          {showTradingPanel && (
-            <div style={{width: '300px'}} className="mobile-full-width transition-all duration-300 animate-slide-in-right" data-tour="trading-panel">
+          ) : (
+            <div className="flex-1">
               <TradingPanel 
                 symbol={symbol} 
                 currentPrice={currentPrice} 
                 onOrderPlaced={handleOrderPlaced}
                 balance={balance}
-                onTogglePanel={toggleTradingPanel}
+                onTogglePanel={() => setMobileView('marketWatch')}
                 orderSide={selectedOrderSide}
               />
             </div>
-          )}
-          
-          {/* Toggle button when panel is collapsed */}
-          {!showTradingPanel && (
-            <div className="flex items-center">
-              <button
-                onClick={toggleTradingPanel}
-                className="bg-theme-secondary border-l border-theme-primary px-2 py-4 hover:bg-theme-tertiary transition-all duration-200 group"
-                title="Show Trading Panel"
-              >
-                <TrendingUp className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary transition-colors" />
-              </button>
+          )
+        ) : (
+          <>
+            {/* Left panels - desktop */}
+            <div className="flex">
+              {showMarketWatch && (
+                <div style={{width: '450px'}} className="animate-section-in">
+                  <MarketWatch 
+                    instruments={instruments} 
+                    selectedSymbol={symbol} 
+                    onSymbolSelect={handleSymbolChange}
+                    onOpenTradingPanel={openTradingPanel}
+                    onSetOrderSide={setOrderSide}
+                  />
+                </div>
+              )}
+              {showNavigator && (
+                <div style={{width: '180px'}} className="animate-section-in">
+                  <Navigator />
+                </div>
+              )}
             </div>
-          )}
-        </div>
+            
+            {/* Main chart area - desktop */}
+            <div className="flex-1 flex mobile-flex-col">
+              {/* Chart */}
+              <div className="flex-1 flex flex-col chart-container mobile-chart-responsive">
+                <MTChart symbol={symbol} timeframe={timeframe} />
+                
+                {/* Terminal at bottom - compact on mobile */}
+                {showTerminal && <Terminal positions={positions} orders={[]} history={[]} />}
+              </div>
+              
+              {/* Trading Panel - collapsible */}
+              {showTradingPanel && (
+                <div style={{width: '300px'}} className="mobile-full-width transition-all duration-300 animate-slide-in-right" data-tour="trading-panel">
+                  <TradingPanel 
+                    symbol={symbol} 
+                    currentPrice={currentPrice} 
+                    onOrderPlaced={handleOrderPlaced}
+                    balance={balance}
+                    onTogglePanel={toggleTradingPanel}
+                    orderSide={selectedOrderSide}
+                  />
+                </div>
+              )}
+              
+              {/* Toggle button when panel is collapsed */}
+              {!showTradingPanel && (
+                <div className="flex items-center">
+                  <button
+                    onClick={toggleTradingPanel}
+                    className="bg-theme-secondary border-l border-theme-primary px-2 py-4 hover:bg-theme-tertiary transition-all duration-200 group"
+                    title="Show Trading Panel"
+                  >
+                    <TrendingUp className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary transition-colors" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Fullscreen Chart Overlay - Mobile */}
