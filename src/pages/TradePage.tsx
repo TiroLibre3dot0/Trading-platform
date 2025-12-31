@@ -51,7 +51,7 @@ const Toast = ({ message, type, onClose }: any) => (
 );
 
 // MetaTrader-style components
-const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarketWatchToggle }: any) => (
+const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarketWatchToggle, onChartToggle }: any) => (
   <div className="bg-theme-secondary border-b border-theme-primary px-3 py-2 flex items-center justify-between flex-wrap gap-2 mobile-toolbar-compact" data-tour="chart-toolbar">
     <div className="flex items-center gap-2 mobile-text-center">
       <span className="font-semibold text-theme-primary">{symbol}</span>
@@ -73,6 +73,9 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarke
     <div className="flex items-center gap-1 order-2 sm:order-3 mobile-gap-2">
       <button onClick={onMarketWatchToggle} className="p-1 bg-theme-tertiary rounded hover:bg-theme-primary transition-all duration-200 transform hover:scale-110 hover-lift" title="Toggle Market Watch">
         <TrendingUp className="w-4 h-4" />
+      </button>
+      <button onClick={onChartToggle} className="p-1 bg-theme-tertiary rounded hover:bg-theme-primary transition-all duration-200 transform hover:scale-110 hover-lift md:hidden" title="Toggle Chart">
+        <LineChart className="w-4 h-4" />
       </button>
       <button className="p-1 bg-theme-tertiary rounded hover:bg-theme-primary transition-all duration-200 transform hover:scale-110 hover-lift hidden sm:inline" title="Line Study">
         <LineChart className="w-4 h-4" />
@@ -795,6 +798,7 @@ export default function TradePage(){
     return saved !== null ? JSON.parse(saved) : true;
   });
   const [selectedOrderSide, setSelectedOrderSide] = useState<'buy' | 'sell'>('buy');
+  const [showChartFullscreen, setShowChartFullscreen] = useState(false);
   
   // Trading state
   const [positions, setPositions] = useState<any[]>([]);
@@ -877,6 +881,7 @@ export default function TradePage(){
         onTimeframeChange={setTimeframe}
         onIndicatorAdd={() => setShowNavigator(!showNavigator)}
         onMarketWatchToggle={() => setShowMarketWatch(!showMarketWatch)}
+        onChartToggle={() => setShowChartFullscreen(!showChartFullscreen)}
       />
       
       {/* Main content area */}
@@ -904,7 +909,7 @@ export default function TradePage(){
         {/* Main chart area */}
         <div className="flex-1 flex mobile-flex-col">
           {/* Chart */}
-          <div className="flex-1 flex flex-col chart-container mobile-chart-responsive">
+          <div className="flex-1 md:flex flex-col chart-container mobile-chart-responsive hidden">
             <MTChart symbol={symbol} timeframe={timeframe} />
             
             {/* Terminal at bottom - compact on mobile */}
@@ -939,6 +944,28 @@ export default function TradePage(){
           )}
         </div>
       </div>
+
+      {/* Fullscreen Chart Overlay - Mobile */}
+      {showChartFullscreen && (
+        <div className="fixed inset-0 z-50 bg-theme-background md:hidden">
+          <div className="h-full flex flex-col">
+            {/* Close button */}
+            <div className="flex justify-end p-4">
+              <button
+                onClick={() => setShowChartFullscreen(false)}
+                className="p-2 bg-theme-secondary rounded hover:bg-theme-tertiary transition-colors"
+                title="Close Chart"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+            {/* Fullscreen Chart */}
+            <div className="flex-1">
+              <MTChart symbol={symbol} timeframe={timeframe} />
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
