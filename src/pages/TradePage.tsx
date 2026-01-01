@@ -228,6 +228,8 @@ const MTChart = ({ symbol, timeframe }: any) => {
   const [priceRange, setPriceRange] = useState({ min: 1.0750, max: 1.0900 });
   const chartWrapRef = useRef<HTMLDivElement | null>(null);
   const [chartSize, setChartSize] = useState({ width: 900, height: 360 });
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
 
   const PAD = { top: 12, right: 72, bottom: 28, left: 10 };
 
@@ -362,6 +364,49 @@ const MTChart = ({ symbol, timeframe }: any) => {
     if (total <= 1) return PAD.left;
     return PAD.left + (index / (total - 1)) * innerWidth;
   };
+
+  const yToPrice = (y: number) => {
+    const denom = innerHeight || 1;
+    const t = 1 - (y - PAD.top) / denom;
+    return priceRange.min + t * (priceRange.max - priceRange.min);
+  };
+
+  const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
+
+  const handlePointerMove = (clientX: number, clientY: number) => {
+    if (!chartWrapRef.current) return;
+    if (candles.length < 2) return;
+
+    const rect = chartWrapRef.current.getBoundingClientRect();
+    const x = clamp(clientX - rect.left, PAD.left, chartSize.width - PAD.right);
+    const y = clamp(clientY - rect.top, PAD.top, chartSize.height - PAD.bottom);
+    const t = (x - PAD.left) / innerWidth;
+    const idx = Math.round(t * (candles.length - 1));
+    const safeIdx = clamp(idx, 0, candles.length - 1);
+
+    setHoverIndex(safeIdx);
+    setHoverPos({ x, y });
+  };
+
+  const clearHover = () => {
+    setHoverIndex(null);
+    setHoverPos(null);
+  };
+
+  const hoveredCandle = hoverIndex !== null ? candles[hoverIndex] : null;
+  const hoveredX = hoverIndex !== null ? timeToX(hoverIndex, candles.length) : null;
+  const hoveredY = hoverPos?.y ?? null;
+
+  const formatTime = (ts: number) => {
+    try {
+      const d = new Date(ts);
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      return `${hh}:${mm}`;
+    } catch (_err) {
+      return '';
+    }
+  };
   
   return (
     <div className="bg-theme-secondary flex-1 flex flex-col border-b border-theme-primary">
@@ -406,6 +451,14 @@ const MTChart = ({ symbol, timeframe }: any) => {
           className="absolute inset-0 w-full h-full"
           viewBox={`0 0 ${chartSize.width} ${chartSize.height}`}
           preserveAspectRatio="none"
+          onMouseMove={(e) => handlePointerMove(e.clientX, e.clientY)}
+          onMouseLeave={clearHover}
+          onTouchMove={(e) => {
+            const t = e.touches?.[0];
+            if (!t) return;
+            handlePointerMove(t.clientX, t.clientY);
+          }}
+          onTouchEnd={clearHover}
         >
           {candles.map((candle, index) => {
             const x = timeToX(index, candles.length);
@@ -444,6 +497,32 @@ const MTChart = ({ symbol, timeframe }: any) => {
               </g>
             );
           })}
+
+          {/* Hover crosshair */}
+          {hoveredX !== null && hoveredY !== null && (
+            <g>
+              <line
+                x1={hoveredX}
+                y1={PAD.top}
+                x2={hoveredX}
+                y2={chartSize.height - PAD.bottom}
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeDasharray="4,4"
+                className="text-theme-primary/30"
+              />
+              <line
+                x1={PAD.left}
+                y1={hoveredY}
+                x2={chartSize.width - PAD.right}
+                y2={hoveredY}
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeDasharray="4,4"
+                className="text-theme-primary/20"
+              />
+            </g>
+          )}
           
           {/* Current price line */}
           <line 
@@ -456,6 +535,41 @@ const MTChart = ({ symbol, timeframe }: any) => {
             strokeDasharray="5,5"
           />
         </svg>
+
+        {/* Hover tooltip */}
+        {hoveredCandle && hoverPos && (
+          <div
+            className="absolute z-10 pointer-events-none"
+            style={{ left: Math.min(12, chartSize.width - 260), top: 10 }}
+          >
+            <div className="bg-theme-primary/90 backdrop-blur-sm border border-theme-secondary/20 rounded-lg px-3 py-2 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div className="text-xs font-semibold text-theme-primary">{symbol}</div>
+                <div className="text-[11px] text-theme-secondary tabular-nums">
+                  {formatTime(hoveredCandle.time)}
+                </div>
+              </div>
+              <div className="mt-1 text-[11px] text-theme-secondary tabular-nums grid grid-cols-2 gap-x-3 gap-y-1">
+                <div>O: <span className="text-theme-primary">{hoveredCandle.open.toFixed(5)}</span></div>
+                <div>H: <span className="text-theme-primary">{hoveredCandle.high.toFixed(5)}</span></div>
+                <div>L: <span className="text-theme-primary">{hoveredCandle.low.toFixed(5)}</span></div>
+                <div>C: <span className="text-theme-primary">{hoveredCandle.close.toFixed(5)}</span></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Hover price bubble on right axis */}
+        {hoverPos && (
+          <div
+            className="absolute right-2 z-10 pointer-events-none"
+            style={{ top: hoverPos.y - 12 }}
+          >
+            <div className="bg-theme-primary/80 border border-theme-secondary/20 rounded px-2 py-1 text-[11px] text-theme-primary tabular-nums">
+              {yToPrice(hoverPos.y).toFixed(5)}
+            </div>
+          </div>
+        )}
         
         {/* Time labels */}
         <div className="absolute bottom-2 left-2 right-20 flex justify-between text-[11px] text-theme-secondary pointer-events-none">
