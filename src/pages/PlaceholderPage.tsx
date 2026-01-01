@@ -206,6 +206,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
     const [showDeposit, setShowDeposit] = useState(false);
     const [showWithdraw, setShowWithdraw] = useState(false);
     const [amountDeposit, setAmountDeposit] = useState(1000);
+    const [promoCodeDeposit, setPromoCodeDeposit] = useState('');
     const [amountWithdraw, setAmountWithdraw] = useState(500);
     const [methodDeposit, setMethodDeposit] = useState('Bank Transfer');
     const [methodWithdraw, setMethodWithdraw] = useState('Bank');
@@ -223,60 +224,181 @@ export default function PlaceholderPage({ title }:{title?:string}){
       if (t && allowed.has(t)) setTab(t);
     }, [location.search]);
 
+    useEffect(() => {
+      const params = new URLSearchParams(location.search);
+      const amountParam = params.get('amount');
+      const promoParam = params.get('promo');
+
+      const normalizedPromo = (promoParam || '').trim();
+      const parsedAmount = amountParam ? Number(amountParam) : NaN;
+
+      if (tab === 'deposits' && (normalizedPromo || Number.isFinite(parsedAmount))) {
+        if (Number.isFinite(parsedAmount) && parsedAmount > 0) setAmountDeposit(parsedAmount);
+        if (normalizedPromo) setPromoCodeDeposit(normalizedPromo);
+        setShowDeposit(true);
+      }
+    }, [location.search, tab]);
+
+    const PROMO_REQUIRED_DEPOSIT_EUR = 500;
+    const PROMO_BONUS_EUR = 300;
+    const PROMO_CODE = 'BW300';
+    const promoMatches = promoCodeDeposit.trim().toUpperCase() === PROMO_CODE;
+    const promoEligible = promoMatches && Number(amountDeposit) >= PROMO_REQUIRED_DEPOSIT_EUR;
+
+    const openDeposit = (method = 'Bank Transfer') => {
+      setMethodDeposit(method);
+      setTab('deposits');
+      setShowDeposit(true);
+    };
+
+    const openWithdraw = (method = 'Bank') => {
+      setMethodWithdraw(method);
+      setTab('withdrawals');
+      setShowWithdraw(true);
+    };
+
+    const applyPromoAndDeposit = () => {
+      setAmountDeposit(PROMO_REQUIRED_DEPOSIT_EUR);
+      setPromoCodeDeposit(PROMO_CODE);
+      openDeposit('Credit Card');
+    };
+
+    const SummaryRow = ({ label, value }: { label: string; value: any }) => (
+      <div className="flex items-center gap-3 py-1.5">
+        <div className="text-sm text-slate-300 whitespace-nowrap">{label}</div>
+        <div className="flex-1 border-b border-dotted border-slate-600/70" />
+        <div className="text-sm font-medium text-slate-100 whitespace-nowrap">{value}</div>
+      </div>
+    );
+
     return (
       <div className="h-full min-w-0 overflow-hidden p-4">
         <Header title="Funds" subtitle="Manage your funds, deposits, withdrawals, and transaction history" Icon={Wallet} />
         <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] flex flex-col">
-          <div className="flex gap-2 mb-4">
-            <button onClick={() => setTab('overview')} className={`px-4 py-2 rounded ${tab === 'overview' ? 'bg-slate-700' : 'bg-slate-800'}`}>Overview</button>
-            <button onClick={() => setTab('deposits')} className={`px-4 py-2 rounded ${tab === 'deposits' ? 'bg-slate-700' : 'bg-slate-800'}`}>Deposits</button>
-            <button onClick={() => setTab('withdrawals')} className={`px-4 py-2 rounded ${tab === 'withdrawals' ? 'bg-slate-700' : 'bg-slate-800'}`}>Withdrawals</button>
-            <button onClick={() => setTab('transactions')} className={`px-4 py-2 rounded ${tab === 'transactions' ? 'bg-slate-700' : 'bg-slate-800'}`}>Transactions</button>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <button
+              onClick={() => setTab('overview')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${tab === 'overview' ? 'bg-slate-700 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700/60'}`}
+            >
+              Overview
+            </button>
+            <button
+              onClick={() => setTab('deposits')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${tab === 'deposits' ? 'bg-slate-700 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700/60'}`}
+            >
+              Deposits
+            </button>
+            <button
+              onClick={() => setTab('withdrawals')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${tab === 'withdrawals' ? 'bg-slate-700 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700/60'}`}
+            >
+              Withdrawals
+            </button>
+            <button
+              onClick={() => setTab('transactions')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${tab === 'transactions' ? 'bg-slate-700 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700/60'}`}
+            >
+              Transactions
+            </button>
           </div>
 
           {tab === 'overview' && (
-            <div className="flex-1 grid grid-cols-3 gap-4">
-              <div className="col-span-2">
-                <div className="flex gap-4 mb-4">
-                  <div>
-                    <div className="text-xs text-slate-400">Available balance</div>
-                    <div className="text-2xl font-semibold">{fmtMoney(mock.funds.summary.available)}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400">Equity</div>
-                    <div className="text-2xl font-semibold">{fmtMoney(mock.accounts[0].equity)}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400">Margin used</div>
-                    <div className="text-2xl font-semibold">{fmtMoney(mock.funds.summary.marginUsed)}</div>
-                  </div>
+            <div className="flex-1 overflow-auto" style={{ minHeight: 0 }}>
+              <div className="max-w-5xl mx-auto">
+                <div className="text-center mt-1 mb-4">
+                  <div className="text-lg font-semibold">Funds management</div>
+                  <div className="text-xs text-slate-400 mt-1">Deposit, withdraw, and keep track of your account balances.</div>
                 </div>
 
-                <div className="bg-slate-800 p-3 rounded">
+                <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 md:p-5 max-w-3xl mx-auto">
+                  <SummaryRow label="Capital" value={fmtMoney(mock.accounts[0].balance)} />
+                  <SummaryRow label="Initial margin" value={fmtMoney(mock.funds.summary.marginUsed)} />
+                  <SummaryRow label="Maintenance margin" value={fmtMoney(Math.round((mock.funds.summary.marginUsed || 0) * 0.2))} />
+                  <SummaryRow label="Live bonus" value={fmtMoney((mock.kpis?.bonus ?? 0) as any)} />
+                  <SummaryRow label="Pending bonus" value={fmtMoney(0)} />
+                  <SummaryRow label="Refunds" value={fmtMoney(0)} />
+                  <SummaryRow label="Available to withdraw" value={fmtMoney(mock.funds.summary.available)} />
+                </div>
+
+                <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => openDeposit('Bank Transfer')}
+                    className="min-w-[220px] px-8 py-3 rounded-full bg-blue-600 hover:bg-blue-500 transition-colors text-white font-medium"
+                  >
+                    Deposit
+                  </button>
+                  <button
+                    onClick={() => openWithdraw('Bank')}
+                    className="min-w-[220px] px-8 py-3 rounded-full bg-slate-800 hover:bg-slate-700/70 transition-colors text-slate-100 font-medium border border-slate-700/70"
+                  >
+                    Withdraw
+                  </button>
+                </div>
+
+                <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto">
+                  <button
+                    onClick={applyPromoAndDeposit}
+                    className="bg-slate-800/70 hover:bg-slate-700/60 transition-colors border border-slate-700/60 rounded-2xl p-4 text-left"
+                    title={`Deposit €${PROMO_REQUIRED_DEPOSIT_EUR} with promo code ${PROMO_CODE}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-blue-400" />
+                      <div className="text-sm font-medium">Bonus offer</div>
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1">Deposit €{PROMO_REQUIRED_DEPOSIT_EUR} → +€{PROMO_BONUS_EUR}</div>
+                  </button>
+
+                  <button
+                    onClick={() => setTab('transactions')}
+                    className="bg-slate-800/70 hover:bg-slate-700/60 transition-colors border border-slate-700/60 rounded-2xl p-4 text-left"
+                  >
+                    <div className="flex items-center gap-2">
+                      <List className="w-4 h-4 text-slate-300" />
+                      <div className="text-sm font-medium">Transaction history</div>
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1">View deposits, withdrawals, and fees</div>
+                  </button>
+
+                  <button
+                    onClick={() => openDeposit('Credit Card')}
+                    className="bg-slate-800/70 hover:bg-slate-700/60 transition-colors border border-slate-700/60 rounded-2xl p-4 text-left"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-emerald-300" />
+                      <div className="text-sm font-medium">Instant deposit</div>
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1">Card top-up with immediate credit</div>
+                  </button>
+
+                  <button
+                    onClick={() => setTab('deposits')}
+                    className="bg-slate-800/70 hover:bg-slate-700/60 transition-colors border border-slate-700/60 rounded-2xl p-4 text-left"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Wallet className="w-4 h-4 text-slate-200" />
+                      <div className="text-sm font-medium">Payment methods</div>
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1">Bank transfer, card, crypto</div>
+                  </button>
+                </div>
+
+                <div className="mt-6 bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 max-w-4xl mx-auto">
                   <div className="text-xs text-slate-400 mb-2">Recent activity</div>
-                  <div className="overflow-auto" style={{maxHeight:200}}>
+                  <div className="overflow-auto" style={{ maxHeight: 220 }}>
                     <table className="w-full text-sm">
                       <tbody>
                         {mock.funds.history.slice(0, 10).map(h=> (
-                          <tr key={h.id} className="border-t border-slate-700">
-                            <td className="py-2">{h.date}</td>
-                            <td className="py-2">{h.method}</td>
-                            <td className="py-2">{fmtMoney(h.amount)}</td>
-                            <td className="py-2 text-slate-400">{h.status}</td>
+                          <tr key={h.id} className="border-t border-slate-700/70">
+                            <td className="py-2 text-slate-300">{h.date}</td>
+                            <td className="py-2 text-slate-200">{h.method}</td>
+                            <td className="py-2 text-slate-100">{fmtMoney(h.amount)}</td>
+                            <td className="py-2 text-slate-400 text-xs">{h.status}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 </div>
-              </div>
-
-              <div>
-                <div className="text-sm text-slate-300 mb-3">Quick actions</div>
-                <button onClick={()=>{ setShowDeposit(true); setMethodDeposit('Bank Transfer'); }} className="w-full mb-2 py-2 bg-emerald-600 rounded">Deposit</button>
-                <button onClick={()=>{ setShowWithdraw(true); setMethodWithdraw('Bank'); }} className="w-full mb-4 py-2 bg-rose-600 rounded">Withdraw</button>
-                <div className="text-xs text-slate-400">Account ID</div>
-                <div className="font-medium mt-1">{mock.accounts[0].id}</div>
               </div>
             </div>
           )}
@@ -285,9 +407,9 @@ export default function PlaceholderPage({ title }:{title?:string}){
             <div className="flex-1">
               <div className="text-sm text-slate-300 mb-3">Deposit methods</div>
               <div className="grid grid-cols-3 gap-3 mb-4">
-                <button onClick={()=>{ setMethodDeposit('Bank Transfer'); setShowDeposit(true); }} className="bg-slate-800 p-3 rounded">Bank Transfer</button>
-                <button onClick={()=>{ setMethodDeposit('Credit Card'); setShowDeposit(true); }} className="bg-slate-800 p-3 rounded">Credit Card</button>
-                <button onClick={()=>{ setMethodDeposit('Crypto'); setShowDeposit(true); }} className="bg-slate-800 p-3 rounded">Crypto</button>
+                <button onClick={()=>openDeposit('Bank Transfer')} className="bg-slate-800/70 hover:bg-slate-700/60 transition-colors border border-slate-700/60 p-4 rounded-2xl text-sm font-medium text-left">Bank Transfer</button>
+                <button onClick={()=>openDeposit('Credit Card')} className="bg-slate-800/70 hover:bg-slate-700/60 transition-colors border border-slate-700/60 p-4 rounded-2xl text-sm font-medium text-left">Credit Card</button>
+                <button onClick={()=>openDeposit('Crypto')} className="bg-slate-800/70 hover:bg-slate-700/60 transition-colors border border-slate-700/60 p-4 rounded-2xl text-sm font-medium text-left">Crypto</button>
               </div>
 
               <div className="bg-slate-800 p-3 rounded">
@@ -378,30 +500,133 @@ export default function PlaceholderPage({ title }:{title?:string}){
         </div>
 
         {showDeposit && (
-          <div className="fixed inset-0 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={()=>setShowDeposit(false)} />
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 z-10 w-96">
-              <div className="text-lg font-semibold">Deposit funds</div>
-              <div className="text-sm text-slate-400 mt-1">Method: {methodDeposit}</div>
-              <input type="number" value={amountDeposit} onChange={e=>setAmountDeposit(Number(e.target.value))} className="w-full bg-slate-800 p-2 rounded mt-3" />
-              <div className="mt-4 flex gap-2">
-                <button onClick={()=>{ setShowDeposit(false); }} className="px-3 py-2 bg-emerald-600 rounded">Confirm</button>
-                <button onClick={()=>setShowDeposit(false)} className="px-3 py-2 bg-slate-800 rounded">Cancel</button>
+          <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={()=>setShowDeposit(false)} />
+            <div className="relative bg-slate-900 border border-slate-700/70 rounded-2xl p-5 z-10 w-full max-w-md shadow-2xl">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-lg font-semibold tracking-tight">Deposit</div>
+                  <div className="text-xs text-slate-400 mt-1">Method: <span className="text-slate-200">{methodDeposit}</span></div>
+                </div>
+                <button
+                  onClick={()=>setShowDeposit(false)}
+                  className="h-9 w-9 rounded-full bg-slate-800/80 hover:bg-slate-700/70 transition-colors text-slate-200"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-xs font-medium text-slate-300">Amount (EUR)</label>
+                <input
+                  type="number"
+                  value={amountDeposit}
+                  onChange={e=>setAmountDeposit(Number(e.target.value))}
+                  className="w-full bg-slate-800/70 border border-slate-700/70 focus:border-slate-500 outline-none p-3 rounded-2xl mt-1 text-slate-100"
+                  min={0}
+                />
+                <div className="text-[11px] text-slate-400 mt-1">Funds are credited according to the selected method.</div>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-xs font-medium text-slate-300">Promo code (optional)</label>
+                <input
+                  type="text"
+                  value={promoCodeDeposit}
+                  onChange={e=>setPromoCodeDeposit(e.target.value)}
+                  className="w-full bg-slate-800/70 border border-slate-700/70 focus:border-slate-500 outline-none p-3 rounded-2xl mt-1 uppercase text-slate-100"
+                  placeholder={PROMO_CODE}
+                />
+
+                {promoCodeDeposit.trim() !== '' && !promoMatches && (
+                  <div className="mt-2 text-xs text-rose-300">Invalid promo code.</div>
+                )}
+
+                {promoMatches && !promoEligible && (
+                  <div className="mt-2 text-xs text-amber-300">Minimum deposit for this promo is €{PROMO_REQUIRED_DEPOSIT_EUR}.</div>
+                )}
+
+                {promoEligible && (
+                  <div className="mt-2 text-xs text-emerald-300">Promo applied: +€{PROMO_BONUS_EUR} bonus.</div>
+                )}
+              </div>
+
+              <div className="mt-5 flex gap-3">
+                <button
+                  onClick={()=>{ setShowDeposit(false); }}
+                  className={`flex-1 px-5 py-2.5 rounded-full font-medium transition-colors ${promoMatches && !promoEligible ? 'bg-slate-700 text-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
+                  disabled={promoMatches && !promoEligible}
+                >
+                  Confirm deposit
+                </button>
+                <button
+                  onClick={()=>setShowDeposit(false)}
+                  className="px-5 py-2.5 rounded-full bg-slate-800/80 hover:bg-slate-700/70 transition-colors text-slate-100 border border-slate-700/70"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
         )}
 
         {showWithdraw && (
-          <div className="fixed inset-0 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={()=>setShowWithdraw(false)} />
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 z-10 w-96">
-              <div className="text-lg font-semibold">Withdraw funds</div>
-              <div className="text-sm text-slate-400 mt-1">Method: {methodWithdraw}</div>
-              <input type="number" value={amountWithdraw} onChange={e=>setAmountWithdraw(Number(e.target.value))} className="w-full bg-slate-800 p-2 rounded mt-3" />
-              <div className="mt-4 flex gap-2">
-                <button onClick={()=>{ setShowWithdraw(false); }} className="px-3 py-2 bg-emerald-600 rounded">Confirm</button>
-                <button onClick={()=>setShowWithdraw(false)} className="px-3 py-2 bg-slate-800 rounded">Cancel</button>
+          <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={()=>setShowWithdraw(false)} />
+            <div className="relative bg-slate-900 border border-slate-700/70 rounded-2xl p-5 z-10 w-full max-w-md shadow-2xl">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-lg font-semibold tracking-tight">Withdraw</div>
+                  <div className="text-xs text-slate-400 mt-1">Destination: <span className="text-slate-200">{methodWithdraw}</span></div>
+                </div>
+                <button
+                  onClick={()=>setShowWithdraw(false)}
+                  className="h-9 w-9 rounded-full bg-slate-800/80 hover:bg-slate-700/70 transition-colors text-slate-200"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-xs font-medium text-slate-300">Amount (EUR)</label>
+                <input
+                  type="number"
+                  value={amountWithdraw}
+                  onChange={e=>setAmountWithdraw(Number(e.target.value))}
+                  className="w-full bg-slate-800/70 border border-slate-700/70 focus:border-slate-500 outline-none p-3 rounded-2xl mt-1 text-slate-100"
+                  min={0}
+                />
+                <div className="text-[11px] text-slate-400 mt-1">Processing time depends on the selected destination.</div>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-xs font-medium text-slate-300">Destination</label>
+                <select
+                  value={methodWithdraw}
+                  onChange={e=>setMethodWithdraw(e.target.value)}
+                  className="w-full bg-slate-800/70 border border-slate-700/70 focus:border-slate-500 outline-none p-3 rounded-2xl mt-1 text-slate-100"
+                >
+                  <option>Bank</option>
+                  <option>Crypto</option>
+                  <option>Card</option>
+                </select>
+              </div>
+
+              <div className="mt-5 flex gap-3">
+                <button
+                  onClick={()=>{ setShowWithdraw(false); }}
+                  className="flex-1 px-5 py-2.5 rounded-full font-medium bg-blue-600 hover:bg-blue-500 transition-colors text-white"
+                >
+                  Confirm withdrawal
+                </button>
+                <button
+                  onClick={()=>setShowWithdraw(false)}
+                  className="px-5 py-2.5 rounded-full bg-slate-800/80 hover:bg-slate-700/70 transition-colors text-slate-100 border border-slate-700/70"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>

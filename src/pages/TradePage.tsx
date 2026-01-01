@@ -34,7 +34,7 @@ const Toast = ({ message, type, onClose }: any) => {
   if (typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className={`fixed top-[calc(72px+1rem)] md:top-4 right-4 z-[70] flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-out ${
+    <div className={`fixed top-[calc(116px+1rem)] md:top-4 right-4 z-[70] flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-out ${
       type === 'success' 
         ? 'bg-green-600 text-white border border-green-500' 
         : type === 'error'

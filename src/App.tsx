@@ -15,7 +15,12 @@ export default function App() {
     try { document.documentElement.dataset.theme = theme; } catch (e) {}
   }, [theme]);
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<AppShell />}>
