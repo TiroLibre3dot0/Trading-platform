@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { LineChart, Activity, Grid3X3, ZoomIn, ZoomOut, Play, RotateCcw, TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
+import { LineChart, Activity, Grid3X3, ZoomIn, ZoomOut, Play, RotateCcw, TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle, CheckCircle, XCircle, HelpCircle, ExternalLink, ArrowLeft } from 'lucide-react';
 import { useAppPreferences } from '../context/AppPreferencesContext';
 
 // Mock market data
@@ -57,7 +57,7 @@ const Toast = ({ message, type, onClose }: any) => {
 };
 
 // MetaTrader-style components
-const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarketWatchToggle, onChartToggle }: any) => (
+const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarketWatchToggle, onChartToggle, mtWebTraderUrl, onOpenMtWebTrader }: any) => (
   <div className="bg-theme-secondary border-b border-theme-primary px-3 py-2 flex items-center justify-between flex-wrap gap-2 mobile-toolbar-compact" data-tour="chart-toolbar">
     <div className="flex items-center gap-2 mobile-text-center">
       <span className="font-semibold text-theme-primary">{symbol}</span>
@@ -104,6 +104,17 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarke
       <button className="p-1 bg-theme-tertiary rounded hover:bg-theme-primary transition-all duration-200 transform hover:scale-110 hover-lift hidden sm:inline" title="Reset">
         <RotateCcw className="w-4 h-4" />
       </button>
+
+      {mtWebTraderUrl && (
+        <button
+          onClick={onOpenMtWebTrader}
+          className="ml-1 px-2 py-1 bg-theme-tertiary rounded hover:bg-theme-primary transition-all duration-200 flex items-center gap-1"
+          title="MetaTrader WebTrader"
+        >
+          <ExternalLink className="w-4 h-4" />
+          <span className="text-xs font-semibold">MT</span>
+        </button>
+      )}
     </div>
   </div>
 );
@@ -971,6 +982,8 @@ const Terminal = ({ positions, orders, history }: any) => (
 
 export default function TradePage(){
   const { theme, toggleTheme } = useAppPreferences();
+  const mtWebTraderUrl = (import.meta as any).env?.VITE_MT_WEBTRADER_URL as string | undefined;
+  const [showMtWebTrader, setShowMtWebTrader] = useState(false);
   const isMobileScreen = () => {
     try {
       return typeof window !== 'undefined' && window.innerWidth <= 768;
@@ -1120,6 +1133,44 @@ export default function TradePage(){
     );
   }, [currentPrice]);
 
+  if (showMtWebTrader && mtWebTraderUrl) {
+    return (
+      <div className="h-full bg-theme-background text-theme-primary flex flex-col">
+        <div className="h-[56px] shrink-0 flex items-center justify-between px-3 border-b border-theme-primary bg-theme-secondary">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowMtWebTrader(false)}
+              className="p-2 rounded bg-theme-tertiary hover:bg-theme-primary transition-colors"
+              aria-label="Back to Trading Platform"
+              title="Back"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div className="text-sm font-semibold text-theme-primary">MetaTrader Web</div>
+            <div className="hidden sm:block text-xs text-theme-secondary">If the iframe is blank, your provider may block embedding.</div>
+          </div>
+          <a
+            href={mtWebTraderUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-theme-secondary hover:text-theme-primary transition-colors flex items-center gap-1"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Open in new tab
+          </a>
+        </div>
+        <div className="flex-1 min-h-0">
+          <iframe
+            title="MetaTrader WebTrader"
+            src={mtWebTraderUrl}
+            className="w-full h-full border-0"
+            allow="fullscreen; clipboard-read; clipboard-write"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full bg-theme-background text-theme-primary flex flex-col">
       {/* MetaTrader-style toolbar */}
@@ -1130,6 +1181,8 @@ export default function TradePage(){
         onIndicatorAdd={() => setShowNavigator(!showNavigator)}
         onMarketWatchToggle={() => setShowMarketWatch(!showMarketWatch)}
         onChartToggle={() => setShowChartFullscreen(!showChartFullscreen)}
+        mtWebTraderUrl={mtWebTraderUrl}
+        onOpenMtWebTrader={() => setShowMtWebTrader(true)}
       />
       
       {/* Main content area */}
