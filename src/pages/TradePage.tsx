@@ -143,7 +143,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
           </tr>
         </thead>
         <tbody>
-          {instruments.slice(0, 12).map((inst: any) => (
+          {instruments.map((inst: any) => (
             <tr 
               key={inst.symbol} 
               onClick={() => onSymbolSelect(inst.symbol)}
@@ -157,7 +157,17 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                     onClick={(e) => {
                       e.stopPropagation();
                       onSymbolSelect(inst.symbol);
-                      onQuickTrade(inst.symbol, 'sell');
+                      // Always open the trade-entry area
+                      try {
+                        onSetOrderSide?.('sell');
+                      } catch (_err) {
+                        // ignore
+                      }
+                      if (typeof onQuickTrade === 'function') {
+                        onQuickTrade(inst.symbol, 'sell');
+                      } else {
+                        onOpenTradingPanel?.();
+                      }
                     }}
                     className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
                     title={`Sell ${inst.symbol}`}
@@ -173,7 +183,17 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                     onClick={(e) => {
                       e.stopPropagation();
                       onSymbolSelect(inst.symbol);
-                      onQuickTrade(inst.symbol, 'buy');
+                      // Always open the trade-entry area
+                      try {
+                        onSetOrderSide?.('buy');
+                      } catch (_err) {
+                        // ignore
+                      }
+                      if (typeof onQuickTrade === 'function') {
+                        onQuickTrade(inst.symbol, 'buy');
+                      } else {
+                        onOpenTradingPanel?.();
+                      }
                     }}
                     className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
                     title={`Buy ${inst.symbol}`}
@@ -1072,80 +1092,6 @@ const QuickTradePanel = ({ symbol, currentPrice, onOrderPlaced, balance, onClose
   );
 };
 
-// Terminal Component for positions and orders
-const Terminal = ({ positions, orders, history }: any) => (
-  <div className="bg-theme-secondary border-t border-theme-primary h-48 flex animate-fade-in">
-    {/* Positions Tab */}
-    <div className="flex-1 border-r border-theme-primary">
-      <div className="p-2 border-b border-theme-primary">
-        <h3 className="text-sm font-medium text-theme-primary">Positions</h3>
-      </div>
-      <div className="overflow-auto h-full">
-        {positions.length === 0 ? (
-          <div className="p-4 text-center text-theme-secondary text-sm animate-fade-in">
-            No open positions
-          </div>
-        ) : (
-          <div className="p-2 space-y-1">
-            {positions.map((position: any, index: number) => (
-              <div 
-                key={position.id} 
-                className="bg-theme-tertiary rounded p-2 text-xs animate-slide-in-up hover-lift transition-all duration-200"
-                style={{animationDelay: `${index * 0.1}s`}}
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-medium text-theme-primary">{position.symbol}</span>
-                  <span className={`font-medium ${position.side === 'buy' ? 'text-green-400' : 'text-red-400'}`}>
-                    {position.side.toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex justify-between text-theme-secondary">
-                  <span>{position.volume} lots</span>
-                  <span>${position.price.toFixed(5)}</span>
-                </div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-theme-secondary">P&L:</span>
-                  <span className={`font-medium transition-colors duration-300 ${position.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    ${position.pnl.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-
-    {/* Orders Tab */}
-    <div className="flex-1">
-      <div className="p-2 border-b border-theme-primary">
-        <h3 className="text-sm font-medium text-theme-primary">Orders</h3>
-      </div>
-      <div className="overflow-auto h-full">
-        {orders.length === 0 ? (
-          <div className="p-4 text-center text-theme-secondary text-sm">
-            No pending orders
-          </div>
-        ) : (
-          <div className="p-2 space-y-1">
-            {orders.map((order: any) => (
-              <div key={order.id} className="bg-theme-tertiary rounded p-2 text-xs">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-theme-primary">{order.symbol}</span>
-                  <span className="text-blue-400">{order.type}</span>
-                </div>
-                <div className="text-theme-secondary mt-1">
-                  {order.volume} lots @ ${order.price}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-);
-
 export default function TradePage(){
   const { theme, toggleTheme } = useAppPreferences();
   const mtWebTraderUrl = (import.meta as any).env?.VITE_MT_WEBTRADER_URL as string | undefined;
@@ -1214,7 +1160,7 @@ export default function TradePage(){
     return true;
   });
   const [showNavigator, setShowNavigator] = useState(false);
-  const [showTerminal, setShowTerminal] = useState(true);
+  
   const [showTradingPanel, setShowTradingPanel] = useState(() => {
     // Load from localStorage, default to false (closed)
     const saved = safeStorageGet('tradingPanelCollapsed');
@@ -1417,7 +1363,7 @@ export default function TradePage(){
   }
 
   return (
-    <div className="h-full bg-theme-background text-theme-primary flex flex-col">
+    <div className="min-h-full bg-theme-background text-theme-primary flex flex-col">
       {/* MetaTrader-style toolbar */}
       <Toolbar
         symbol={symbol}
@@ -1431,7 +1377,7 @@ export default function TradePage(){
       />
       
       {/* Main content area */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Mobile view switching */}
         {isMobile ? (
           mobileView === 'marketWatch' ? (
@@ -1498,9 +1444,6 @@ export default function TradePage(){
               {/* Chart */}
               <div className="flex-1 flex flex-col chart-container mobile-chart-responsive">
                 <MTChart symbol={symbol} timeframe={timeframe} />
-                
-                {/* Terminal at bottom - compact on mobile */}
-                {showTerminal && <Terminal positions={positions} orders={[]} history={[]} />}
               </div>
               
               {/* Trading Panel - collapsible */}
