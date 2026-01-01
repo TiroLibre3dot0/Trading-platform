@@ -984,6 +984,37 @@ export default function TradePage(){
   const { theme, toggleTheme } = useAppPreferences();
   const mtWebTraderUrl = (import.meta as any).env?.VITE_MT_WEBTRADER_URL as string | undefined;
   const [showMtWebTrader, setShowMtWebTrader] = useState(false);
+  const [mtIframeLoaded, setMtIframeLoaded] = useState(false);
+  const [mtIframeShowHelp, setMtIframeShowHelp] = useState(false);
+
+  const getHost = (url: string | undefined) => {
+    if (!url) return null;
+    try {
+      return new URL(url).host.toLowerCase();
+    } catch (_err) {
+      return null;
+    }
+  };
+
+  const mtHost = getHost(mtWebTraderUrl);
+  const mtKnownNoEmbedHosts = new Set([
+    'trade.mql5.com',
+    'metatraderweb.app',
+    'webtrader.metaquotes.net'
+  ]);
+  const mtMayEmbed = mtHost ? !mtKnownNoEmbedHosts.has(mtHost) : true;
+  const mtEmbedMode: 'iframe' | 'newtab-only' = mtWebTraderUrl ? (mtMayEmbed ? 'iframe' : 'newtab-only') : 'newtab-only';
+
+  useEffect(() => {
+    if (!showMtWebTrader) return;
+    setMtIframeLoaded(false);
+    setMtIframeShowHelp(false);
+
+    // If an iframe can't load (due to X-Frame-Options/CSP), we won't reliably know.
+    // Provide a gentle help CTA after a short delay.
+    const t = window.setTimeout(() => setMtIframeShowHelp(true), 2500);
+    return () => window.clearTimeout(t);
+  }, [showMtWebTrader]);
   const isMobileScreen = () => {
     try {
       return typeof window !== 'undefined' && window.innerWidth <= 768;
@@ -1146,8 +1177,12 @@ export default function TradePage(){
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <div className="text-sm font-semibold text-theme-primary">MetaTrader Web</div>
-            <div className="hidden sm:block text-xs text-theme-secondary">If the iframe is blank, your provider may block embedding.</div>
+            <div className="text-sm font-semibold text-theme-primary">MetaTrader 5 Web</div>
+            <div className="hidden sm:block text-xs text-theme-secondary">
+              {mtEmbedMode === 'newtab-only'
+                ? 'This provider does not allow embedding. Use new tab.'
+                : 'If the iframe is blank, your provider may block embedding.'}
+            </div>
           </div>
           <a
             href={mtWebTraderUrl}
@@ -1160,12 +1195,56 @@ export default function TradePage(){
           </a>
         </div>
         <div className="flex-1 min-h-0">
-          <iframe
-            title="MetaTrader WebTrader"
-            src={mtWebTraderUrl}
-            className="w-full h-full border-0"
-            allow="fullscreen; clipboard-read; clipboard-write"
-          />
+          {mtEmbedMode === 'newtab-only' ? (
+            <div className="h-full w-full flex items-center justify-center p-6">
+              <div className="max-w-md w-full bg-theme-secondary/20 border border-theme-secondary/20 rounded-lg p-4">
+                <div className="text-sm font-semibold text-theme-primary">Embedding blocked</div>
+                <div className="text-xs text-theme-secondary mt-1">
+                  This MT5 WebTrader host blocks iframe embedding (X-Frame-Options / CSP). Use “Open in new tab”.
+                </div>
+                <a
+                  href={mtWebTraderUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex items-center gap-2 text-sm text-theme-primary bg-theme-secondary/50 hover:bg-theme-secondary px-3 py-2 rounded-lg transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Open MT5 WebTrader
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div className="relative w-full h-full">
+              {!mtIframeLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-theme-background">
+                  <div className="text-xs text-theme-secondary">Loading MT5 WebTrader…</div>
+                </div>
+              )}
+              {mtIframeShowHelp && !mtIframeLoaded && (
+                <div className="absolute top-3 right-3 left-3 md:left-auto md:w-[360px] bg-theme-secondary/20 border border-theme-secondary/20 rounded-lg p-3">
+                  <div className="text-xs text-theme-secondary">
+                    If it stays blank, your MT5 provider likely blocks embedding.
+                  </div>
+                  <a
+                    href={mtWebTraderUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex items-center gap-2 text-xs text-theme-primary bg-theme-secondary/50 hover:bg-theme-secondary px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open in new tab
+                  </a>
+                </div>
+              )}
+              <iframe
+                title="MetaTrader WebTrader"
+                src={mtWebTraderUrl}
+                className="w-full h-full border-0"
+                allow="fullscreen; clipboard-read; clipboard-write"
+                onLoad={() => setMtIframeLoaded(true)}
+              />
+            </div>
+          )}
         </div>
       </div>
     );
