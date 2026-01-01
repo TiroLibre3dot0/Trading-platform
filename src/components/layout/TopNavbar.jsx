@@ -130,10 +130,18 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
   
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [mobileSheet, setMobileSheet] = useState(null);
   const [hideNumbers, setHideNumbers] = useState(false);
   const [showEconomicData, setShowEconomicData] = useState(false);
   const notificationsRef = useRef(null);
   const accountDropdownRef = useRef(null);
+
+  const openMobileSheet = (sheet) => {
+    setShowNotifications(false);
+    setShowAccountDropdown(false);
+    setShowEconomicData(false);
+    setMobileSheet(sheet);
+  };
 
   // User status effects configuration
   const getStatusEffect = (status) => {
@@ -225,7 +233,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
 
           {/* Account Button - Thin */}
           <button
-            onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+            onClick={() => openMobileSheet('account')}
             className="h-9 px-2 bg-theme-secondary/50 hover:bg-theme-secondary text-theme-primary text-xs outline-none border border-theme-secondary/30 hover:border-theme-secondary/60 focus:border-theme-primary rounded transition-all duration-200 min-w-[56px]"
           >
             <span className="font-medium truncate">{acct.id}</span>
@@ -233,7 +241,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
 
           {/* Notifications */}
           <button
-            onClick={() => setShowNotifications(!showNotifications)}
+            onClick={() => openMobileSheet('notifications')}
             aria-label="Notifications"
             className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 relative group"
           >
@@ -247,7 +255,10 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
 
           {/* Economic Data Toggle */}
           <button
-            onClick={() => setShowEconomicData(true)}
+            onClick={() => {
+              setMobileSheet(null);
+              setShowEconomicData(true);
+            }}
             aria-label="Economic Data"
             className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 group"
             title="View account metrics"
@@ -533,6 +544,127 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               <div className="mt-3 bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
                 <div className="text-xs text-theme-secondary mb-1">Bonus</div>
                 <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(kpis?.bonus || 0)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Account Sheet */}
+      {mobileSheet === 'account' && (
+        <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm md:hidden">
+          <div className="fixed inset-0 bg-theme-primary flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-theme-secondary/20">
+              <h2 className="text-lg font-semibold text-theme-primary">Select Account</h2>
+              <button
+                onClick={() => setMobileSheet(null)}
+                className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary transition-colors"
+                aria-label="Close"
+              >
+                <XCircle className="w-5 h-5 text-theme-secondary" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="text-xs text-theme-secondary mb-3">Tap an account to switch.</div>
+              <div className="space-y-2">
+                {accounts.map(account => (
+                  <button
+                    key={account.id}
+                    onClick={() => {
+                      onAccountChange && onAccountChange(account.id);
+                      setMobileSheet(null);
+                    }}
+                    className={`w-full text-left rounded-lg border transition-colors p-4 ${
+                      account.id === acct.id
+                        ? 'bg-theme-secondary/30 border-theme-primary/30'
+                        : 'bg-theme-secondary/10 border-theme-secondary/20 hover:bg-theme-secondary/20'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-sm font-semibold text-theme-primary">{account.id}</div>
+                      <div className="text-sm text-theme-primary">
+                        {hideNumbers ? '••••••' : formatCurrency(account.balance)}
+                      </div>
+                    </div>
+                    <div className="text-xs text-theme-secondary mt-1">
+                      {accountMode === 'demo' ? 'Demo' : 'Live'}
+                      {account.id === acct.id ? ' • Selected' : ''}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Notifications Sheet */}
+      {mobileSheet === 'notifications' && (
+        <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm md:hidden">
+          <div className="fixed inset-0 bg-theme-primary flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-theme-secondary/20">
+              <div>
+                <h2 className="text-lg font-semibold text-theme-primary">Notifications</h2>
+                <p className="text-xs text-theme-secondary mt-1">You have {unreadCount} unread notifications</p>
+              </div>
+              <button
+                onClick={() => setMobileSheet(null)}
+                className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary transition-colors"
+                aria-label="Close"
+              >
+                <XCircle className="w-5 h-5 text-theme-secondary" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              <div className="divide-y divide-theme-secondary/20">
+                {mockNotifications.map(notification => {
+                  const IconComponent = notification.icon;
+                  return (
+                    <div
+                      key={notification.id}
+                      className={`p-4 ${!notification.read ? 'bg-blue-600/5 border-l-2 border-blue-500/50' : ''}`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`p-2 rounded-full ${
+                            notification.type === 'success'
+                              ? 'bg-green-500/20'
+                              : notification.type === 'warning'
+                              ? 'bg-yellow-500/20'
+                              : 'bg-blue-500/20'
+                          }`}
+                        >
+                          <IconComponent
+                            className={`w-4 h-4 ${
+                              notification.type === 'success'
+                                ? 'text-green-400'
+                                : notification.type === 'warning'
+                                ? 'text-yellow-400'
+                                : 'text-blue-400'
+                            }`}
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="text-sm font-medium text-theme-primary truncate">{notification.title}</h4>
+                            <span className="text-xs text-theme-secondary flex-shrink-0">{notification.timestamp}</span>
+                          </div>
+                          <p className="text-xs text-theme-secondary mt-1.5 leading-relaxed">{notification.message}</p>
+                        </div>
+                        {!notification.read && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="p-4 border-t border-theme-secondary/20">
+                <button className="w-full text-center text-sm text-theme-secondary hover:text-theme-primary transition-colors py-2 rounded-lg hover:bg-theme-tertiary/30">
+                  View All Notifications
+                </button>
               </div>
             </div>
           </div>

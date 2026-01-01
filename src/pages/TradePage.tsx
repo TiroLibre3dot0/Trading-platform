@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { LineChart, Activity, Grid3X3, ZoomIn, ZoomOut, Play, RotateCcw, TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
 import { useAppPreferences } from '../context/AppPreferencesContext';
 
@@ -29,26 +30,31 @@ const mock = {
 };
 
 // Toast Notification Component
-const Toast = ({ message, type, onClose }: any) => (
-  <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-out ${
-    type === 'success' 
-      ? 'bg-green-600 text-white border border-green-500' 
-      : type === 'error'
-      ? 'bg-red-600 text-white border border-red-500'
-      : 'bg-blue-600 text-white border border-blue-500'
-  } animate-slide-in-right`}>
-    {type === 'success' && <CheckCircle className="w-5 h-5" />}
-    {type === 'error' && <XCircle className="w-5 h-5" />}
-    {type === 'info' && <AlertTriangle className="w-5 h-5" />}
-    <span className="text-sm font-medium">{message}</span>
-    <button 
-      onClick={onClose}
-      className="ml-2 hover:bg-white/20 rounded-full p-1 transition-colors"
-    >
-      <XCircle className="w-4 h-4" />
-    </button>
-  </div>
-);
+const Toast = ({ message, type, onClose }: any) => {
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div className={`fixed top-[calc(72px+1rem)] md:top-4 right-4 z-[70] flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-out ${
+      type === 'success' 
+        ? 'bg-green-600 text-white border border-green-500' 
+        : type === 'error'
+        ? 'bg-red-600 text-white border border-red-500'
+        : 'bg-blue-600 text-white border border-blue-500'
+    } animate-slide-in-right`}>
+      {type === 'success' && <CheckCircle className="w-5 h-5" />}
+      {type === 'error' && <XCircle className="w-5 h-5" />}
+      {type === 'info' && <AlertTriangle className="w-5 h-5" />}
+      <span className="text-sm font-medium">{message}</span>
+      <button 
+        onClick={onClose}
+        className="ml-2 hover:bg-white/20 rounded-full p-1 transition-colors"
+      >
+        <XCircle className="w-4 h-4" />
+      </button>
+    </div>,
+    document.body
+  );
+};
 
 // MetaTrader-style components
 const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarketWatchToggle, onChartToggle }: any) => (
