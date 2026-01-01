@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { LineChart, Activity, Grid3X3, ZoomIn, ZoomOut, Play, RotateCcw, TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle, CheckCircle, XCircle, HelpCircle, ExternalLink, ArrowLeft } from 'lucide-react';
 import { useAppPreferences } from '../context/AppPreferencesContext';
@@ -226,6 +226,35 @@ const MTChart = ({ symbol, timeframe }: any) => {
   const [candles, setCandles] = useState<any[]>([]);
   const [currentPrice, setCurrentPrice] = useState(1.0825);
   const [priceRange, setPriceRange] = useState({ min: 1.0750, max: 1.0900 });
+  const chartWrapRef = useRef<HTMLDivElement | null>(null);
+  const [chartSize, setChartSize] = useState({ width: 900, height: 360 });
+
+  const PAD = { top: 12, right: 72, bottom: 28, left: 10 };
+
+  useLayoutEffect(() => {
+    if (!chartWrapRef.current) return;
+
+    const el = chartWrapRef.current;
+    const update = (rect: DOMRectReadOnly | DOMRect) => {
+      const width = Math.max(520, Math.floor(rect.width));
+      const height = Math.max(260, Math.floor(rect.height));
+      setChartSize({ width, height });
+    };
+
+    try {
+      const ro = new ResizeObserver(entries => {
+        if (!entries?.[0]) return;
+        update(entries[0].contentRect);
+      });
+      ro.observe(el);
+      update(el.getBoundingClientRect());
+      return () => ro.disconnect();
+    } catch (_err) {
+      // Fallback for environments without ResizeObserver
+      update(el.getBoundingClientRect());
+      return;
+    }
+  }, []);
   
   // Initialize candles
   useEffect(() => {
@@ -318,48 +347,54 @@ const MTChart = ({ symbol, timeframe }: any) => {
     }
   }, [candles]);
   
+  const innerWidth = Math.max(1, chartSize.width - PAD.left - PAD.right);
+  const innerHeight = Math.max(1, chartSize.height - PAD.top - PAD.bottom);
+  const candleWidth = Math.max(3, Math.min(10, Math.floor(innerWidth / Math.max(30, candles.length * 1.6))));
+  const candleHalf = candleWidth / 2;
+
   const priceToY = (price: number) => {
-    const chartHeight = 300; // Chart height in pixels
-    return chartHeight - ((price - priceRange.min) / (priceRange.max - priceRange.min)) * chartHeight;
+    const denom = (priceRange.max - priceRange.min) || 1;
+    const t = (price - priceRange.min) / denom;
+    return PAD.top + (1 - t) * innerHeight;
   };
   
   const timeToX = (index: number, total: number) => {
-    const chartWidth = 600; // Chart width in pixels
-    return (index / (total - 1)) * chartWidth;
+    if (total <= 1) return PAD.left;
+    return PAD.left + (index / (total - 1)) * innerWidth;
   };
   
   return (
-    <div className="bg-slate-900 flex-1 flex flex-col">
+    <div className="bg-theme-secondary flex-1 flex flex-col border-b border-theme-primary">
       {/* Price display */}
-      <div className="flex justify-between items-center p-2 bg-slate-800 border-b border-slate-700">
-        <div className="text-sm text-slate-300">
-          <span className="font-semibold">{symbol}</span>
-          <span className="ml-2 text-lg font-bold text-white">{currentPrice.toFixed(5)}</span>
+      <div className="flex justify-between items-center px-3 py-2 bg-theme-primary/20 border-b border-theme-primary">
+        <div className="text-sm text-theme-secondary">
+          <span className="font-semibold text-theme-primary">{symbol}</span>
+          <span className="ml-2 text-lg font-bold text-theme-primary">{currentPrice.toFixed(5)}</span>
         </div>
-        <div className="text-xs text-slate-400">
+        <div className="text-xs text-theme-secondary">
           Spread: 0.2 pips | Volume: {candles[candles.length - 1]?.volume || 0}
         </div>
       </div>
       
       {/* Chart area */}
-      <div className="flex-1 relative bg-gradient-to-b from-slate-800 to-slate-900 overflow-hidden">
+      <div ref={chartWrapRef} className="flex-1 relative bg-theme-secondary overflow-hidden">
         {/* Grid lines */}
         <div className="absolute inset-0">
           {Array.from({length: 5}).map((_, i) => (
             <div 
               key={i} 
-              className="absolute w-full border-t border-slate-700 opacity-30"
+              className="absolute w-full border-t border-theme-primary/20"
               style={{ top: `${(i + 1) * 20}%` }}
             />
           ))}
         </div>
         
         {/* Price labels */}
-        <div className="absolute right-2 top-2 text-xs text-slate-400 space-y-4">
+        <div className="absolute top-2 bottom-8 right-2 w-[64px] flex flex-col justify-between text-[11px] text-theme-secondary pointer-events-none">
           {Array.from({length: 6}).map((_, i) => {
             const price = priceRange.max - (i * (priceRange.max - priceRange.min) / 5);
             return (
-              <div key={i} style={{ marginTop: i === 0 ? '0' : '-16px' }}>
+              <div key={i} className="text-right tabular-nums">
                 {price.toFixed(5)}
               </div>
             );
@@ -367,7 +402,11 @@ const MTChart = ({ symbol, timeframe }: any) => {
         </div>
         
         {/* Candles */}
-        <svg className="absolute inset-0 w-full h-full" style={{ paddingRight: '60px', paddingTop: '10px', paddingBottom: '30px' }}>
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox={`0 0 ${chartSize.width} ${chartSize.height}`}
+          preserveAspectRatio="none"
+        >
           {candles.map((candle, index) => {
             const x = timeToX(index, candles.length);
             const openY = priceToY(candle.open);
@@ -383,9 +422,9 @@ const MTChart = ({ symbol, timeframe }: any) => {
               <g key={candle.time} className="animate-candle-appear" style={{animationDelay: `${index * 0.02}s`}}>
                 {/* Wick */}
                 <line 
-                  x1={x + 2.5} 
+                  x1={x} 
                   y1={highY} 
-                  x2={x + 2.5} 
+                  x2={x} 
                   y2={lowY} 
                   stroke={isGreen ? "#22c55e" : "#ef4444"} 
                   strokeWidth="1"
@@ -393,9 +432,9 @@ const MTChart = ({ symbol, timeframe }: any) => {
                 />
                 {/* Body */}
                 <rect 
-                  x={x} 
+                  x={x - candleHalf} 
                   y={bodyY} 
-                  width="5" 
+                  width={candleWidth} 
                   height={Math.max(bodyHeight, 1)}
                   fill={isGreen ? "#22c55e" : "#ef4444"}
                   stroke={isGreen ? "#16a34a" : "#dc2626"}
@@ -408,9 +447,9 @@ const MTChart = ({ symbol, timeframe }: any) => {
           
           {/* Current price line */}
           <line 
-            x1="0" 
+            x1={PAD.left} 
             y1={priceToY(currentPrice)} 
-            x2="100%" 
+            x2={chartSize.width - PAD.right} 
             y2={priceToY(currentPrice)}
             stroke="#fbbf24" 
             strokeWidth="1" 
@@ -419,7 +458,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
         </svg>
         
         {/* Time labels */}
-        <div className="absolute bottom-2 left-2 right-16 flex justify-between text-xs text-slate-500">
+        <div className="absolute bottom-2 left-2 right-20 flex justify-between text-[11px] text-theme-secondary pointer-events-none">
           {Array.from({length: 6}).map((_, i) => {
             const candleIndex = Math.floor((i / 5) * (candles.length - 1));
             const candle = candles[candleIndex];
