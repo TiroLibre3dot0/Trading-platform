@@ -1377,7 +1377,7 @@ export default function TradePage(){
       />
       
       {/* Main content area */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      <div className="flex-1 flex overflow-hidden min-h-0 pb-4">
         {/* Mobile view switching */}
         {isMobile ? (
           mobileView === 'marketWatch' ? (
