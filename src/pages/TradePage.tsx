@@ -436,12 +436,12 @@ const MTChart = ({ symbol, timeframe }: any) => {
   return (
     <div className="bg-theme-secondary flex-1 flex flex-col border-b border-theme-primary">
       {/* Price display */}
-      <div className="flex justify-between items-center px-3 py-2 bg-theme-primary/20 border-b border-theme-primary">
-        <div className="text-sm text-theme-secondary">
-          <span className="font-semibold text-theme-primary">{symbol}</span>
-          <span className="ml-2 text-lg font-bold text-theme-primary">{currentPrice.toFixed(5)}</span>
+      <div className="flex justify-between items-center px-3 py-2.5 bg-theme-primary/15 border-b border-theme-primary">
+        <div className="flex items-baseline gap-2">
+          <span className="text-xs font-semibold text-theme-secondary">{symbol}</span>
+          <span className="text-lg font-bold text-theme-primary tabular-nums">{currentPrice.toFixed(5)}</span>
         </div>
-        <div className="text-xs text-theme-secondary">
+        <div className="text-[11px] text-theme-secondary tabular-nums">
           Spread: 0.2 pips | Volume: {candles[candles.length - 1]?.volume || 0}
         </div>
       </div>
@@ -1421,7 +1421,7 @@ export default function TradePage(){
             {/* Left panels - desktop */}
             <div className="flex">
               {showMarketWatch && (
-                <div style={{width: '450px'}} className="animate-section-in">
+                <div style={{width: '400px'}} className="animate-section-in">
                   <MarketWatch 
                     instruments={instruments} 
                     selectedSymbol={symbol} 
