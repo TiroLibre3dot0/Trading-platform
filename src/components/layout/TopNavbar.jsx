@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { accounts, user } from '../../mock/dashboardMock';
 import mock from '../../mock/userDashboardMock';
 import { useAppPreferences } from '../../context/AppPreferencesContext';
-import { Bell, User, CheckCircle, AlertTriangle, TrendingUp, Shield, ChevronDown, Eye, EyeOff, Crown, Star, Menu } from 'lucide-react';
+import { Bell, User, CheckCircle, AlertTriangle, TrendingUp, Shield, ChevronDown, Eye, EyeOff, Crown, Star, Menu, XCircle } from 'lucide-react';
 
 const UserAvatar = ({ name }) => (
   <div className="h-9 w-9 rounded-full bg-slate-700 flex items-center justify-center text-sm font-semibold text-white">{name.split(' ')[0][0]}</div>
@@ -62,6 +62,65 @@ const mockNotifications = [
   }
 ];
 
+// Mock economic data
+const mockEconomicData = [
+  {
+    id: 1,
+    country: 'United States',
+    indicator: 'Non-Farm Payrolls',
+    value: '216K',
+    expected: '200K',
+    previous: '199K',
+    impact: 'high',
+    time: '8:30 AM',
+    date: 'Jan 5, 2024'
+  },
+  {
+    id: 2,
+    country: 'Eurozone',
+    indicator: 'CPI m/m',
+    value: '0.1%',
+    expected: '0.1%',
+    previous: '0.1%',
+    impact: 'high',
+    time: '11:00 AM',
+    date: 'Jan 5, 2024'
+  },
+  {
+    id: 3,
+    country: 'United Kingdom',
+    indicator: 'GDP q/q',
+    value: '0.3%',
+    expected: '0.2%',
+    previous: '0.2%',
+    impact: 'medium',
+    time: '7:00 AM',
+    date: 'Jan 5, 2024'
+  },
+  {
+    id: 4,
+    country: 'Japan',
+    indicator: 'Unemployment Rate',
+    value: '2.4%',
+    expected: '2.5%',
+    previous: '2.5%',
+    impact: 'medium',
+    time: '12:30 AM',
+    date: 'Jan 5, 2024'
+  },
+  {
+    id: 5,
+    country: 'Canada',
+    indicator: 'CPI m/m',
+    value: '0.2%',
+    expected: '0.2%',
+    previous: '0.1%',
+    impact: 'medium',
+    time: '8:30 AM',
+    date: 'Jan 5, 2024'
+  }
+];
+
 export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuToggle }) {
   const acct = accounts.find(a => a.id === selectedAccountId) || accounts[0];
   const { accountMode } = useAppPreferences();
@@ -72,6 +131,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [hideNumbers, setHideNumbers] = useState(false);
+  const [showEconomicData, setShowEconomicData] = useState(false);
   const notificationsRef = useRef(null);
   const accountDropdownRef = useRef(null);
 
@@ -141,25 +201,65 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
 
   const unreadCount = mockNotifications.filter(n => !n.read).length;
   return (
-    <header className="h-18 w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary/10 shadow-sm flex items-center px-8 relative z-40">
-      <div className="flex items-center gap-6">
-        <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg">
+    <header className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary/10 shadow-sm flex items-center px-4 md:px-8 relative z-40">
+      {/* Left section - Logo and Mobile Controls */}
+      <div className="flex items-center gap-2 md:gap-6">
+        <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg hidden md:flex">
           <img 
             src="/Logo.png" 
             alt="Bullwaves" 
             className="h-10 w-auto transition-all duration-300 hover:scale-105 cursor-pointer"
           />
-          {/* User status badge - Temporarily removed */}
-          {/* <div className={`mt-2 px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border shadow-sm cursor-default flex items-center gap-2 ${statusEffect.textColor} ${statusEffect.bgColor} ${statusEffect.borderColor} transition-all duration-300`}>
-            <statusEffect.icon className="w-3 h-3" />
-            <span>{user.status}</span>
-          </div> */}
         </div>
 
-        {/* Hamburger Menu Button - Mobile */}
+        {/* Mobile Controls Row */}
+        <div className="flex md:hidden items-center gap-1">
+          {/* Hamburger Menu Button */}
+          <button
+            onClick={onMenuToggle}
+            className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 group"
+            aria-label="Toggle menu"
+          >
+            <Menu className="w-5 h-5 text-theme-secondary group-hover:text-theme-primary transition-colors" />
+          </button>
+
+          {/* Account Button - Thin */}
+          <button
+            onClick={() => setShowAccountDropdown(!showAccountDropdown)}
+            className="h-9 px-2 bg-theme-secondary/50 hover:bg-theme-secondary text-theme-primary text-xs outline-none border border-theme-secondary/30 hover:border-theme-secondary/60 focus:border-theme-primary rounded transition-all duration-200 min-w-[56px]"
+          >
+            <span className="font-medium truncate">{acct.id}</span>
+          </button>
+
+          {/* Notifications */}
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            aria-label="Notifications"
+            className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 relative group"
+          >
+            <Bell className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary transition-colors" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 text-[10px] bg-red-500 text-white rounded-full px-1 min-w-[16px] h-4 flex items-center justify-center font-semibold shadow-sm">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Economic Data Toggle */}
+          <button
+            onClick={() => setShowEconomicData(true)}
+            aria-label="Economic Data"
+            className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 group"
+            title="View account metrics"
+          >
+            <Eye className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary transition-colors" />
+          </button>
+        </div>
+
+        {/* Desktop Hamburger Menu Button */}
         <button
           onClick={onMenuToggle}
-          className="md:hidden p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 group"
+          className="hidden md:flex p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 group"
           aria-label="Toggle menu"
         >
           <Menu className="w-5 h-5 text-theme-secondary group-hover:text-theme-primary transition-colors" />
@@ -254,8 +354,8 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
         </div>
         </div>
 
-      {/* Right section - Controls */}
-      <div className="flex items-center gap-6">
+      {/* Right section - Desktop Controls */}
+      <div className="hidden md:flex items-center gap-6">
         {/* Toggle Numbers Visibility */}
         <button
           onClick={() => setHideNumbers(!hideNumbers)}
@@ -369,6 +469,75 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
           </div>
         )}
       </div>
+
+      {/* Economic Data Modal - Full Screen Mobile */}
+      {showEconomicData && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:hidden">
+          <div className="fixed inset-0 bg-theme-primary flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-theme-secondary/20">
+              <h2 className="text-lg font-semibold text-theme-primary">Account Metrics</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setHideNumbers(!hideNumbers)}
+                  aria-label={hideNumbers ? "Show numbers" : "Hide numbers"}
+                  className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary transition-colors"
+                  title={hideNumbers ? "Show financial numbers" : "Hide financial numbers"}
+                >
+                  {hideNumbers ? (
+                    <EyeOff className="w-5 h-5 text-theme-secondary" />
+                  ) : (
+                    <Eye className="w-5 h-5 text-theme-secondary" />
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowEconomicData(false)}
+                  className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary transition-colors"
+                  aria-label="Close"
+                >
+                  <XCircle className="w-5 h-5 text-theme-secondary" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="bg-theme-secondary/20 border border-theme-secondary/20 rounded-lg p-4">
+                <div className="text-xs text-theme-secondary mb-1">Selected account</div>
+                <div className="text-sm font-semibold text-theme-primary">{acct.id} • {accountMode === 'demo' ? 'Demo' : 'Live'}</div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
+                  <div className="text-xs text-theme-secondary mb-1">Equity</div>
+                  <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(display?.equity || 0)}</div>
+                </div>
+                <div className="bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
+                  <div className="text-xs text-theme-secondary mb-1">Available</div>
+                  <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(display?.balance || 0)}</div>
+                </div>
+                <div className="bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
+                  <div className="text-xs text-theme-secondary mb-1">P/L</div>
+                  <div className={`text-lg font-semibold ${
+                    hideNumbers ? 'text-theme-primary' : (mock.plLast30 || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {hideNumbers ? '••••••' : formatCurrency(mock.plLast30 || 0, true)}
+                  </div>
+                </div>
+                <div className="bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
+                  <div className="text-xs text-theme-secondary mb-1">Margin</div>
+                  <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(kpis?.marginUsed || 0)}</div>
+                </div>
+              </div>
+
+              <div className="mt-3 bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
+                <div className="text-xs text-theme-secondary mb-1">Bonus</div>
+                <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(kpis?.bonus || 0)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

@@ -58,7 +58,7 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarke
       <span className="text-sm text-theme-secondary hidden sm:inline">EURUSD</span>
     </div>
 
-    <div className="flex items-center gap-0.5 flex-wrap order-3 sm:order-2 w-full sm:w-auto justify-center sm:justify-start mobile-gap-1">
+    <div className="flex items-center gap-0.5 flex-wrap order-3 sm:order-2 w-full sm:w-auto justify-center sm:justify-start mobile-gap-1 hidden md:flex">
       {['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1', 'MN'].map(tf => (
         <button
           key={tf}
@@ -102,13 +102,13 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarke
   </div>
 );
 
-const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradingPanel, onSetOrderSide }: any) => (
+const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradingPanel, onSetOrderSide, onQuickTrade, isMobile }: any) => (
   <div className="bg-theme-secondary border-r border-theme-primary flex flex-col h-full" data-tour="market-watch">
     <div className="px-2 py-1 border-b border-theme-primary flex items-center justify-between">
       <div className="text-xs font-semibold text-theme-primary">Market Watch</div>
-      {window.innerWidth <= 768 && (
+      {isMobile && (
         <button
-          onClick={() => setMobileView('trading')}
+          onClick={onOpenTradingPanel}
           className="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded font-semibold transition-all duration-200"
         >
           Trading Panel
@@ -140,7 +140,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                     onClick={(e) => {
                       e.stopPropagation();
                       onSymbolSelect(inst.symbol);
-                      openQuickTrade(inst.symbol, 'sell');
+                      onQuickTrade(inst.symbol, 'sell');
                     }}
                     className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
                     title={`Sell ${inst.symbol}`}
@@ -156,7 +156,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                     onClick={(e) => {
                       e.stopPropagation();
                       onSymbolSelect(inst.symbol);
-                      openQuickTrade(inst.symbol, 'buy');
+                      onQuickTrade(inst.symbol, 'buy');
                     }}
                     className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
                     title={`Buy ${inst.symbol}`}
@@ -441,7 +441,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
 };
 
 // Trading Panel Component
-const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePanel, orderSide }: any) => {
+const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePanel, orderSide, isMobile }: any) => {
   const [orderType, setOrderType] = useState('market');
   const [side, setSide] = useState(orderSide || 'buy');
   const [volume, setVolume] = useState('0.01');
@@ -535,9 +535,9 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
         {/* Symbol & Price Header */}
         <div className="px-3 py-2 border-b border-theme-primary flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {window.innerWidth <= 768 && (
+            {isMobile && (
               <button
-                onClick={() => setMobileView('marketWatch')}
+                onClick={onTogglePanel}
                 className="px-2 py-1 bg-theme-tertiary hover:bg-theme-primary text-theme-secondary text-xs rounded transition-all duration-200"
               >
                 ← Market Watch
@@ -965,25 +965,55 @@ const Terminal = ({ positions, orders, history }: any) => (
 
 export default function TradePage(){
   const { theme, toggleTheme } = useAppPreferences();
+  const isMobileScreen = () => {
+    try {
+      return typeof window !== 'undefined' && window.innerWidth <= 768;
+    } catch (_err) {
+      return false;
+    }
+  };
+
+  const safeStorageGet = (key: string) => {
+    try {
+      return localStorage.getItem(key);
+    } catch (_err) {
+      return null;
+    }
+  };
+
+  const safeStorageSet = (key: string, value: string) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (_err) {
+      // ignore (private mode / storage disabled)
+    }
+  };
+
   const instruments = useMemo(() => mock.markets.slice(0, 20), []);
   const [symbol, setSymbol] = useState(instruments[0]?.symbol || 'EUR/USD');
   const [timeframe, setTimeframe] = useState('H1');
+  const [isMobile, setIsMobile] = useState(isMobileScreen);
   const [showMarketWatch, setShowMarketWatch] = useState(() => {
-    // Show market watch by default on mobile
-    return window.innerWidth <= 768;
+    // Show market watch by default on both mobile and desktop
+    return true;
   });
   const [showNavigator, setShowNavigator] = useState(false);
   const [showTerminal, setShowTerminal] = useState(true);
   const [showTradingPanel, setShowTradingPanel] = useState(() => {
-    // Load from localStorage, default to true
-    const saved = localStorage.getItem('tradingPanelCollapsed');
-    return saved !== null ? JSON.parse(saved) : true;
+    // Load from localStorage, default to false (closed)
+    const saved = safeStorageGet('tradingPanelCollapsed');
+    if (saved === null) return false;
+    try {
+      return JSON.parse(saved);
+    } catch (_err) {
+      return false;
+    }
   });
   const [selectedOrderSide, setSelectedOrderSide] = useState<'buy' | 'sell'>('buy');
   const [showChartFullscreen, setShowChartFullscreen] = useState(false);
   const [mobileView, setMobileView] = useState<'marketWatch' | 'trading' | 'quickTrade'>(() => {
-    // Default to market watch on mobile
-    return window.innerWidth <= 768 ? 'marketWatch' : 'trading';
+    // Default to market watch on mobile, trading on desktop
+    return isMobileScreen() ? 'marketWatch' : 'trading';
   });
   const [quickTradeSymbol, setQuickTradeSymbol] = useState('');
   const [quickTradeSide, setQuickTradeSide] = useState<'buy' | 'sell'>('buy');
@@ -1001,6 +1031,24 @@ export default function TradePage(){
     }
   }, [symbol, instruments]);
 
+  // Track viewport changes (orientation/resize) without reading window in render.
+  useEffect(() => {
+    const onResize = () => setIsMobile(isMobileScreen());
+    onResize();
+
+    try {
+      window.addEventListener('resize', onResize);
+      window.addEventListener('orientationchange', onResize);
+      return () => {
+        window.removeEventListener('resize', onResize);
+        window.removeEventListener('orientationchange', onResize);
+      };
+    } catch (_err) {
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSymbolChange = (newSymbol: string) => {
     setSymbol(newSymbol);
     // Add a brief animation effect
@@ -1014,7 +1062,12 @@ export default function TradePage(){
   const toggleTradingPanel = () => {
     const newState = !showTradingPanel;
     setShowTradingPanel(newState);
-    localStorage.setItem('tradingPanelCollapsed', JSON.stringify(newState));
+    safeStorageSet('tradingPanelCollapsed', JSON.stringify(newState));
+  };
+
+  const openTradingPanel = () => {
+    setShowTradingPanel(true);
+    safeStorageSet('tradingPanelCollapsed', JSON.stringify(true));
   };
 
   const openQuickTrade = (symbol: string, side: 'buy' | 'sell') => {
@@ -1076,15 +1129,17 @@ export default function TradePage(){
       {/* Main content area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Mobile view switching */}
-        {window.innerWidth <= 768 ? (
+        {isMobile ? (
           mobileView === 'marketWatch' ? (
             <div className="flex-1">
               <MarketWatch 
                 instruments={instruments} 
                 selectedSymbol={symbol} 
                 onSymbolSelect={handleSymbolChange}
-                onOpenTradingPanel={openTradingPanel}
+                onOpenTradingPanel={() => setMobileView('trading')}
                 onSetOrderSide={setOrderSide}
+                onQuickTrade={openQuickTrade}
+                isMobile={isMobile}
               />
             </div>
           ) : mobileView === 'quickTrade' ? (
@@ -1107,6 +1162,7 @@ export default function TradePage(){
                 balance={balance}
                 onTogglePanel={() => setMobileView('marketWatch')}
                 orderSide={selectedOrderSide}
+                isMobile={isMobile}
               />
             </div>
           )
@@ -1122,6 +1178,7 @@ export default function TradePage(){
                     onSymbolSelect={handleSymbolChange}
                     onOpenTradingPanel={openTradingPanel}
                     onSetOrderSide={setOrderSide}
+                    isMobile={false}
                   />
                 </div>
               )}

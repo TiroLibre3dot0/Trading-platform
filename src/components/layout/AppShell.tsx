@@ -13,7 +13,7 @@ function DemoNarrativaWrapper() {
 
 export default function AppShell(){
   const navigate = useNavigate();
-  const [menuCollapsed, setMenuCollapsed] = useState(false);
+  const [menuCollapsed, setMenuCollapsed] = useState(true);
   const [secondaryOpen, setSecondaryOpen] = useState(false);
   const [primarySelection, setPrimarySelection] = useState('trade');
   const [secondarySelection, setSecondarySelection] = useState(null as any);
@@ -45,7 +45,8 @@ export default function AppShell(){
 
   const handleMenuToggle = () => {
     setMenuCollapsed(v => !v);
-    setSecondaryOpen(v => !v);
+    // Ensure only primary sidebar is shown when toggling menu
+    setSecondaryOpen(false);
   };
 
   // handleDemoStart is now handled by the DemoContext in the sidebar
