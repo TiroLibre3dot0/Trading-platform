@@ -231,7 +231,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
 
-  const PAD = { top: 12, right: 72, bottom: 28, left: 10 };
+  const PAD = { top: 12, right: 72, bottom: 24, left: 10 };
 
   useLayoutEffect(() => {
     if (!chartWrapRef.current) return;
@@ -408,6 +408,11 @@ const MTChart = ({ symbol, timeframe }: any) => {
     }
   };
   
+  const maxVolume = useMemo(() => {
+    if (!candles.length) return 1;
+    return Math.max(1, ...candles.map(c => c.volume || 0));
+  }, [candles]);
+
   return (
     <div className="bg-theme-secondary flex-1 flex flex-col border-b border-theme-primary">
       {/* Price display */}
@@ -422,7 +427,8 @@ const MTChart = ({ symbol, timeframe }: any) => {
       </div>
       
       {/* Chart area */}
-      <div ref={chartWrapRef} className="flex-1 relative bg-theme-secondary overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col bg-theme-secondary overflow-hidden">
+        <div ref={chartWrapRef} className="flex-1 min-h-0 relative">
         {/* Grid lines */}
         <div className="absolute inset-0">
           {Array.from({length: 5}).map((_, i) => (
@@ -449,8 +455,10 @@ const MTChart = ({ symbol, timeframe }: any) => {
         {/* Candles */}
         <svg
           className="absolute inset-0 w-full h-full"
+          width={chartSize.width}
+          height={chartSize.height}
           viewBox={`0 0 ${chartSize.width} ${chartSize.height}`}
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
           onMouseMove={(e) => handlePointerMove(e.clientX, e.clientY)}
           onMouseLeave={clearHover}
           onTouchMove={(e) => {
@@ -481,6 +489,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
                   y2={lowY} 
                   stroke={isGreen ? "#22c55e" : "#ef4444"} 
                   strokeWidth="1"
+                  vectorEffect="non-scaling-stroke"
                   className="transition-all duration-300 opacity-70"
                 />
                 {/* Body */}
@@ -492,6 +501,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
                   fill={isGreen ? "#22c55e" : "#ef4444"}
                   stroke={isGreen ? "#16a34a" : "#dc2626"}
                   strokeWidth="0.5"
+                  vectorEffect="non-scaling-stroke"
                   className="transition-all duration-300 opacity-80"
                 />
               </g>
@@ -509,6 +519,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
                 stroke="currentColor"
                 strokeWidth="1"
                 strokeDasharray="4,4"
+                vectorEffect="non-scaling-stroke"
                 className="text-theme-primary/30"
               />
               <line
@@ -519,6 +530,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
                 stroke="currentColor"
                 strokeWidth="1"
                 strokeDasharray="4,4"
+                vectorEffect="non-scaling-stroke"
                 className="text-theme-primary/20"
               />
             </g>
@@ -533,6 +545,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
             stroke="#fbbf24" 
             strokeWidth="1" 
             strokeDasharray="5,5"
+            vectorEffect="non-scaling-stroke"
           />
         </svg>
 
@@ -540,7 +553,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
         {hoveredCandle && hoverPos && (
           <div
             className="absolute z-10 pointer-events-none"
-            style={{ left: Math.min(12, chartSize.width - 260), top: 10 }}
+            style={{ left: 12, top: 10 }}
           >
             <div className="bg-theme-primary/90 backdrop-blur-sm border border-theme-secondary/20 rounded-lg px-3 py-2 shadow-sm">
               <div className="flex items-center justify-between gap-4">
@@ -563,7 +576,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
         {hoverPos && (
           <div
             className="absolute right-2 z-10 pointer-events-none"
-            style={{ top: hoverPos.y - 12 }}
+            style={{ top: clamp(hoverPos.y - 12, 8, chartSize.height - PAD.bottom - 24) }}
           >
             <div className="bg-theme-primary/80 border border-theme-secondary/20 rounded px-2 py-1 text-[11px] text-theme-primary tabular-nums">
               {yToPrice(hoverPos.y).toFixed(5)}
@@ -571,38 +584,38 @@ const MTChart = ({ symbol, timeframe }: any) => {
           </div>
         )}
         
-        {/* Time labels */}
-        <div className="absolute bottom-2 left-2 right-20 flex justify-between text-[11px] text-theme-secondary pointer-events-none">
-          {Array.from({length: 6}).map((_, i) => {
-            const candleIndex = Math.floor((i / 5) * (candles.length - 1));
-            const candle = candles[candleIndex];
-            if (!candle) return null;
-            
-            const date = new Date(candle.time);
-            return (
-              <div key={i}>
-                {date.getHours().toString().padStart(2, '0')}:{date.getMinutes().toString().padStart(2, '0')}
-              </div>
-            );
-          })}
         </div>
-        
-        {/* Volume bars */}
-        <div className="absolute bottom-8 left-2 right-16 h-16 border-t border-slate-700">
-          <div className="flex items-end h-full gap-px">
-            {candles.slice(-30).map((candle, index) => {
-              const maxVolume = Math.max(...candles.map(c => c.volume));
-              const height = (candle.volume / maxVolume) * 60;
-              const isGreen = candle.close >= candle.open;
-              
+
+        {/* Time + Volume area (separate, so it doesn't overlap candles) */}
+        <div className="h-[88px] border-t border-theme-primary/20 relative">
+          <div className="absolute top-2 left-2 right-2 flex justify-between text-[11px] text-theme-secondary pointer-events-none">
+            {Array.from({length: 6}).map((_, i) => {
+              const candleIndex = Math.floor((i / 5) * (candles.length - 1));
+              const candle = candles[candleIndex];
+              if (!candle) return null;
+              const date = new Date(candle.time);
               return (
-                <div 
-                  key={candle.time}
-                  className={`flex-1 ${isGreen ? 'bg-green-600' : 'bg-red-600'}`}
-                  style={{ height: `${height}px`, minHeight: '2px' }}
-                />
+                <div key={i} className="tabular-nums">
+                  {date.getHours().toString().padStart(2, '0')}:{date.getMinutes().toString().padStart(2, '0')}
+                </div>
               );
             })}
+          </div>
+
+          <div className="absolute bottom-2 left-2 right-2 h-14">
+            <div className="flex items-end h-full gap-px">
+              {candles.slice(-30).map((candle) => {
+                const height = ((candle.volume || 0) / maxVolume) * 56;
+                const isGreen = candle.close >= candle.open;
+                return (
+                  <div
+                    key={candle.time}
+                    className={`flex-1 ${isGreen ? 'bg-green-600/80' : 'bg-red-600/80'}`}
+                    style={{ height: `${Math.max(2, height)}px` }}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
