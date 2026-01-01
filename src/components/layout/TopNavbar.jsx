@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { accounts, user } from '../../mock/dashboardMock';
 import mock from '../../mock/userDashboardMock';
 import { useAppPreferences } from '../../context/AppPreferencesContext';
@@ -122,6 +123,7 @@ const mockEconomicData = [
 ];
 
 export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuToggle }) {
+  const navigate = useNavigate();
   const acct = accounts.find(a => a.id === selectedAccountId) || accounts[0];
   const { accountMode } = useAppPreferences();
   const acctData = mock.accounts.find(a => (accountMode==='demo' ? a.type==='Demo' : a.type==='Live')) || mock.accounts[0];
@@ -141,6 +143,14 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
     setShowAccountDropdown(false);
     setShowEconomicData(false);
     setMobileSheet(sheet);
+  };
+
+  const goToDeposits = () => {
+    try {
+      navigate('/funds?tab=deposits');
+    } catch (_err) {
+      // ignore
+    }
   };
 
   // User status effects configuration
@@ -351,7 +361,13 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
           </div>
 
           {/* Tertiary metric - Bonus */}
-          <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg">
+          <button
+            type="button"
+            onClick={goToDeposits}
+            className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg"
+            title="Go to Funds / Deposits"
+            aria-label="Go to Funds / Deposits"
+          >
             <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
               Bonus
             </div>
@@ -360,7 +376,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               {/* Subtle shimmer effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
             </div>
-          </div>
+          </button>
         </div>
         </div>
         </div>

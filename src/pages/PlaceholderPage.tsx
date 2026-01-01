@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import mock from '../mock/userDashboardMock';
 import { User, Zap, BarChart2, TrendingUp, List, Wallet, Star, Activity } from 'lucide-react';
 import TradePage from './TradePage';
@@ -201,6 +202,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
 
   // Funds
   const FundsView = () => {
+    const location = useLocation();
     const [showDeposit, setShowDeposit] = useState(false);
     const [showWithdraw, setShowWithdraw] = useState(false);
     const [amountDeposit, setAmountDeposit] = useState(1000);
@@ -208,8 +210,18 @@ export default function PlaceholderPage({ title }:{title?:string}){
     const [methodDeposit, setMethodDeposit] = useState('Bank Transfer');
     const [methodWithdraw, setMethodWithdraw] = useState('Bank');
     const [notesWithdraw, setNotesWithdraw] = useState('');
-    const [tab, setTab] = useState('overview');
+    const [tab, setTab] = useState(() => {
+      const t = new URLSearchParams(location.search).get('tab');
+      const allowed = new Set(['overview', 'deposits', 'withdrawals', 'transactions']);
+      return t && allowed.has(t) ? t : 'overview';
+    });
     const [selectedTx, setSelectedTx] = useState<any|null>(null);
+
+    useEffect(() => {
+      const t = new URLSearchParams(location.search).get('tab');
+      const allowed = new Set(['overview', 'deposits', 'withdrawals', 'transactions']);
+      if (t && allowed.has(t)) setTab(t);
+    }, [location.search]);
 
     return (
       <div className="h-full min-w-0 overflow-hidden p-4">
