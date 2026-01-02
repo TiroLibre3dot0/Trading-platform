@@ -10,7 +10,7 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
   const navigate = useNavigate();
 
   const NAVBAR_H = 72;
-  const BANNER_H = 44;
+  const BANNER_H = 0;
 
   const PROMO_MIN_DEPOSIT_EUR = 500;
   const PROMO_BONUS_EUR = 300;
@@ -37,21 +37,27 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
     <div className="h-screen bg-theme-background text-theme-primary overflow-hidden">
       <TopNavbar selectedAccountId={selectedAccount} onAccountChange={setSelectedAccount} onMenuToggle={handleMenuToggle} />
 
+      {/* Floating promo banner */}
       <div
-        className="h-[44px] w-full bg-theme-tertiary text-theme-primary border-b border-theme-secondary/20 flex items-center px-4 md:px-8 relative z-30 cursor-pointer"
-        role="button"
-        tabIndex={0}
-        onClick={goToDeposits}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') goToDeposits();
-        }}
-        title={promoText}
-        aria-label={promoText}
+        className="fixed inset-x-4 md:inset-x-6 z-30 pointer-events-none"
+        style={{ top: `${NAVBAR_H + 12}px` }}
       >
-        <div className="w-full flex items-center justify-center gap-3 min-w-0">
-          <Gift className="w-4 h-4 flex-shrink-0 text-blue-400" />
-          <div className="min-w-0 text-sm md:text-base font-medium truncate text-center">
-            {promoText}
+        <div className="max-w-4xl mx-auto pointer-events-auto">
+          <div
+            className="bg-theme-tertiary/90 text-theme-primary border border-theme-secondary/20 rounded-full px-4 py-2 md:px-5 md:py-2.5 shadow-lg backdrop-blur flex items-center gap-3 min-w-0 cursor-pointer"
+            role="button"
+            tabIndex={0}
+            onClick={goToDeposits}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') goToDeposits();
+            }}
+            title={promoText}
+            aria-label={promoText}
+          >
+            <Gift className="w-4 h-4 flex-shrink-0 text-blue-400" />
+            <div className="min-w-0 text-sm md:text-base font-medium truncate">
+              {promoText}
+            </div>
           </div>
         </div>
       </div>
