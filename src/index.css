@@ -60,6 +60,17 @@ html, body, #root {
   }
 }
 
+/* Hide scrollbars but keep scrolling (Market Watch, tables, etc.) */
+@layer utilities {
+  .scrollbar-invisible {
+    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-invisible::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+}
+
 /* Custom animations for trading platform */
 @keyframes slide-in-right {
   from {

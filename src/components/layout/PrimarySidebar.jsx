@@ -19,10 +19,9 @@ export default function PrimarySidebar({ collapsed, active, onSelect, onToggleMe
   };
 
   const items = [
-    { id: 'menu', label: 'Menu', icon: User, action: () => onToggleMenu && onToggleMenu() },
+    { id: 'menu', label: 'Menu', icon: User },
     { id: 'trade', label: 'Negotiate', icon: Zap },
-    { id: 'open', label: 'Open Positions', icon: TrendingUp },
-    { id: 'closed', label: 'Closed Positions', icon: TrendingUp },
+    { id: 'positions', label: 'Positions', icon: TrendingUp },
     { id: 'funds', label: 'Funds', icon: Wallet },
     { id: 'social', label: 'Social Trading', icon: Star },
     { id: 'tutorial', label: 'Tutorial', icon: HelpCircle, disabled: true, comingSoon: true },

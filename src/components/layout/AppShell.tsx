@@ -23,20 +23,28 @@ export default function AppShell(){
   const handlePrimarySelect = (id:string) => {
     setPrimarySelection(id);
     const map:any = {
+      menu: '/menu',
       trade: '/trade',
-      open: '/open-positions',
-      closed: '/closed-positions',
+      positions: '/positions',
+      open: '/positions',
+      closed: '/positions',
       funds: '/funds',
       social: '/social',
       support: '/support'
     };
     const p = map[id] || '/dashboard';
+
+    if (id === 'menu') {
+      setMenuCollapsed(false);
+      setSecondaryOpen(true);
+    }
     navigate(p);
   };
 
   const handleSecondarySelect = (key:any) => {
     setSecondarySelection(key);
     const normalized = (''+key).toLowerCase();
+    if (normalized.includes('account-settings') || normalized.includes('account settings')) navigate('/account-settings');
     if (normalized.includes('profile')) navigate('/profile');
     else if (normalized.includes('document')) navigate('/documents');
     else if (normalized.includes('security')) navigate('/security');
@@ -44,9 +52,11 @@ export default function AppShell(){
   };
 
   const handleMenuToggle = () => {
-    setMenuCollapsed(v => !v);
-    // Ensure only primary sidebar is shown when toggling menu
-    setSecondaryOpen(false);
+    // Desktop: show secondary sidebar AND a central user overview
+    setMenuCollapsed(false);
+    setSecondaryOpen(true);
+    setPrimarySelection('menu');
+    navigate('/menu');
   };
 
   // handleDemoStart is now handled by the DemoContext in the sidebar

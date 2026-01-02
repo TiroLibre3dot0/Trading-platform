@@ -35,6 +35,7 @@ export default function SecondarySidebar({ open, onClose, active, onSelect }) {
       title: 'Account',
       icon: User,
       items: [
+        { key: 'account-settings', label: 'Account settings', icon: Settings },
         { key: 'profile', label: 'Profile', icon: User },
         { key: 'personal-info', label: 'Personal information', icon: UserCheck },
         { key: 'verification', label: 'Verification / KYC', icon: Shield },

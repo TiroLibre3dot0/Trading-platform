@@ -66,7 +66,7 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
         </div>
 
         <main className="flex-1 overflow-y-auto md:overflow-hidden transition-all duration-300 relative" style={{minWidth:0}}>
-          <div className="min-h-full p-3 md:p-6 relative z-0">
+          <div className="h-full min-h-0 p-3 md:p-6 relative z-0">
             {children}
           </div>
           {/* Overlay for secondary sidebar */}

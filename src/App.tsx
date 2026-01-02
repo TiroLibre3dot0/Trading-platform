@@ -24,11 +24,14 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<AppShell />}>
+          <Route path="/menu" element={<PlaceholderPage title="Menu" />} />
+          <Route path="/account-settings" element={<PlaceholderPage title="Account Settings" />} />
           <Route path="/premium" element={<PremiumRewardsPage />} />
           <Route path="/social" element={<SocialTradingPage />} />
           <Route path="/trade" element={<TradePage />} />
-          <Route path="/open-positions" element={<PlaceholderPage title="Open Positions" />} />
-          <Route path="/closed-positions" element={<PlaceholderPage title="Closed Positions" />} />
+          <Route path="/positions" element={<PlaceholderPage title="Positions" />} />
+          <Route path="/open-positions" element={<PlaceholderPage title="Positions" />} />
+          <Route path="/closed-positions" element={<PlaceholderPage title="Positions" />} />
           <Route path="/funds" element={<PlaceholderPage title="Funds" />} />
           <Route path="/support" element={<PlaceholderPage title="Support" />} />
           <Route path="/documents" element={<PlaceholderPage title="Documents" />} />
