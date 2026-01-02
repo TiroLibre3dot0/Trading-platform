@@ -19,23 +19,12 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
   const promoText =
     `Fund your account with at least €${PROMO_MIN_DEPOSIT_EUR} and get a €${PROMO_BONUS_EUR} bonus. Promo code: ${PROMO_CODE}. T&Cs apply.`;
 
-  const [promoDismissed, setPromoDismissed] = React.useState(() => {
-    try {
-      return window?.localStorage?.getItem('bw_promo_banner_dismissed') === '1';
-    } catch (_err) {
-      return false;
-    }
-  });
+  const [promoDismissed, setPromoDismissed] = React.useState(false);
 
   const dismissPromo = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setPromoDismissed(true);
-    try {
-      window?.localStorage?.setItem('bw_promo_banner_dismissed', '1');
-    } catch (_err) {
-      // ignore
-    }
   };
 
   const handleMenuToggle = () => {
@@ -74,7 +63,10 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
               title={promoText}
               aria-label={promoText}
             >
-              <Gift className="w-4 h-4 flex-shrink-0 text-blue-400" />
+              <div className="relative flex-shrink-0">
+                <span className="absolute inset-0 rounded-full bg-blue-500/15 motion-safe:animate-pulse motion-reduce:animate-none" />
+                <Gift className="relative w-4 h-4 text-blue-400" />
+              </div>
               <div className="min-w-0 text-sm md:text-base font-semibold truncate">
                 {promoText}
               </div>
