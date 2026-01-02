@@ -120,7 +120,7 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarke
 );
 
 const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradingPanel, onSetOrderSide, onQuickTrade, isMobile }: any) => (
-  <div className="bg-theme-secondary border-r border-theme-primary flex flex-col h-full" data-tour="market-watch">
+  <div className="bg-theme-secondary border border-theme-primary/20 rounded-lg overflow-hidden flex flex-col h-full" data-tour="market-watch">
     <div className="px-2 py-1 border-b border-theme-primary flex items-center justify-between">
       <div className="text-xs font-semibold text-theme-primary">Market Watch</div>
       {isMobile && (
@@ -216,7 +216,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
 );
 
 const Navigator = () => (
-  <div className="bg-theme-secondary border-r border-theme-primary flex flex-col h-full" data-tour="navigator">
+  <div className="bg-theme-secondary border border-theme-primary/20 rounded-lg overflow-hidden flex flex-col h-full" data-tour="navigator">
     <div className="p-2 border-b border-theme-primary">
       <div className="text-sm font-semibold text-theme-primary">Navigator</div>
     </div>
@@ -434,7 +434,7 @@ const MTChart = ({ symbol, timeframe }: any) => {
   }, [candles]);
 
   return (
-    <div className="bg-theme-secondary flex-1 flex flex-col border-b border-theme-primary">
+    <div className="bg-theme-secondary flex-1 flex flex-col border border-theme-primary/20 rounded-lg overflow-hidden">
       {/* Price display */}
       <div className="flex justify-between items-center px-3 py-2.5 bg-theme-primary/15 border-b border-theme-primary">
         <div className="flex items-baseline gap-2">
@@ -1377,7 +1377,7 @@ export default function TradePage(){
       />
       
       {/* Main content area */}
-      <div className="flex-1 flex overflow-hidden min-h-0 pb-4">
+      <div className="flex-1 flex overflow-hidden min-h-0 pb-6 px-3 pt-3 gap-3">
         {/* Mobile view switching */}
         {isMobile ? (
           mobileView === 'marketWatch' ? (
@@ -1419,9 +1419,9 @@ export default function TradePage(){
         ) : (
           <>
             {/* Left panels - desktop */}
-            <div className="flex">
+            <div className="flex gap-3">
               {showMarketWatch && (
-                <div style={{width: '400px'}} className="animate-section-in">
+                <div style={{width: '360px'}} className="animate-section-in">
                   <MarketWatch 
                     instruments={instruments} 
                     selectedSymbol={symbol} 
@@ -1433,14 +1433,14 @@ export default function TradePage(){
                 </div>
               )}
               {showNavigator && (
-                <div style={{width: '180px'}} className="animate-section-in">
+                <div style={{width: '170px'}} className="animate-section-in">
                   <Navigator />
                 </div>
               )}
             </div>
             
             {/* Main chart area - desktop */}
-            <div className="flex-1 flex mobile-flex-col">
+            <div className="flex-1 flex mobile-flex-col gap-3">
               {/* Chart */}
               <div className="flex-1 flex flex-col chart-container mobile-chart-responsive">
                 <MTChart symbol={symbol} timeframe={timeframe} />
@@ -1448,7 +1448,7 @@ export default function TradePage(){
               
               {/* Trading Panel - collapsible */}
               {showTradingPanel && (
-                <div style={{width: '300px'}} className="mobile-full-width transition-all duration-300 animate-slide-in-right" data-tour="trading-panel">
+                <div style={{width: '280px'}} className="mobile-full-width transition-all duration-300 animate-slide-in-right" data-tour="trading-panel">
                   <TradingPanel 
                     symbol={symbol} 
                     currentPrice={currentPrice} 
