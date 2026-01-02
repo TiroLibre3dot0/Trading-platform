@@ -251,8 +251,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
   const unreadCount = mockNotifications.filter(n => !n.read).length;
   return (
     <header
-      className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary/5 shadow-sm flex items-center px-4 md:px-8 relative z-40"
-      style={{ borderBottomWidth: '0.5px' }}
+      className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary shadow-sm flex items-center px-4 md:px-8 relative z-40"
     >
       {/* Left section - Logo and Mobile Controls */}
       <div className="flex items-center gap-2 md:gap-6">
@@ -346,7 +345,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
                 Equity
               </div>
-              <div className="text-lg text-theme-primary font-semibold transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+              <div className="text-lg text-theme-primary font-normal transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
                 {hideNumbers ? '••••••' : formatMoney(display?.equity || 0)}
               </div>
             </div>
@@ -354,7 +353,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
                 Available
               </div>
-              <div className="text-lg text-theme-primary font-medium transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+              <div className="text-lg text-theme-primary font-normal transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
                 {hideNumbers ? '••••••' : formatMoney(display?.balance || 0)}
               </div>
             </div>
@@ -371,7 +370,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
                 P/L
               </div>
-              <div className={`text-lg font-medium transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] ${
+              <div className={`text-lg font-normal transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] ${
                 !hideNumbers && (plLast30 || 0) >= 0 
                   ? 'text-green-400 group-hover:text-green-300 group-hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.4)]'
                   : 'text-red-400 group-hover:text-red-300 group-hover:drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]'
@@ -383,7 +382,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
                 Margin
               </div>
-              <div className="text-lg text-theme-primary font-medium transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+              <div className="text-lg text-theme-primary font-normal transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
                 {hideNumbers ? '••••••' : formatMoney(marginUsed)}
               </div>
             </div>
@@ -405,7 +404,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
             <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
               Bonus
             </div>
-            <div className="text-lg text-theme-primary font-semibold transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] relative">
+            <div className="text-lg text-theme-primary font-normal transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] relative">
               {hideNumbers ? '••••••' : formatBonus(bonusValue)}
               {/* Subtle shimmer effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
@@ -572,15 +571,15 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <div className="bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
                   <div className="text-xs text-theme-secondary mb-1">Equity</div>
-                  <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(display?.equity || 0)}</div>
+                  <div className="text-lg font-normal text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(display?.equity || 0)}</div>
                 </div>
                 <div className="bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
                   <div className="text-xs text-theme-secondary mb-1">Available</div>
-                  <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(display?.balance || 0)}</div>
+                  <div className="text-lg font-normal text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(display?.balance || 0)}</div>
                 </div>
                 <div className="bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
                   <div className="text-xs text-theme-secondary mb-1">P/L</div>
-                  <div className={`text-lg font-semibold ${
+                  <div className={`text-lg font-normal ${
                     hideNumbers ? 'text-theme-primary' : (mock.plLast30 || 0) >= 0 ? 'text-green-400' : 'text-red-400'
                   }`}>
                     {hideNumbers ? '••••••' : formatCurrency(mock.plLast30 || 0, true)}
@@ -588,13 +587,13 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
                 </div>
                 <div className="bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
                   <div className="text-xs text-theme-secondary mb-1">Margin</div>
-                  <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(kpis?.marginUsed || 0)}</div>
+                  <div className="text-lg font-normal text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(kpis?.marginUsed || 0)}</div>
                 </div>
               </div>
 
               <div className="mt-3 bg-theme-secondary/30 rounded-lg p-4 border border-theme-secondary/20">
                 <div className="text-xs text-theme-secondary mb-1">Bonus</div>
-                <div className="text-lg font-semibold text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(kpis?.bonus || 0)}</div>
+                <div className="text-lg font-normal text-theme-primary">{hideNumbers ? '••••••' : formatCurrency(kpis?.bonus || 0)}</div>
               </div>
             </div>
           </div>
