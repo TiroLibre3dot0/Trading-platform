@@ -9,18 +9,26 @@ const UserAvatar = ({ name }) => (
   <div className="h-9 w-9 rounded-full bg-slate-700 flex items-center justify-center text-sm font-semibold text-white">{name.split(' ')[0][0]}</div>
 );
 
-// Professional number formatting function - minimal style
+const moneyFormatter = new Intl.NumberFormat('it-IT', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+// Professional money formatting - consistent, elegant, locale-aware
 const formatCurrency = (value, showSign = false) => {
-  const num = Number(value) || 0;
-  const formatted = Math.abs(num).toLocaleString('en-US');
-  
+  const num = Number(value);
+  if (!Number.isFinite(num)) return '—';
+
   if (showSign) {
-    if (num > 0) return `+$${formatted}`;
-    if (num < 0) return `-$${formatted}`;
-    return `$${formatted}`;
+    const abs = moneyFormatter.format(Math.abs(num));
+    if (num > 0) return `+${abs}`;
+    if (num < 0) return `-${abs}`;
+    return moneyFormatter.format(0);
   }
-  
-  return `$${formatted}`;
+
+  return moneyFormatter.format(num);
 };
 
 // Mock notifications data
@@ -219,7 +227,10 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
 
   const unreadCount = mockNotifications.filter(n => !n.read).length;
   return (
-    <header className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary/10 shadow-sm flex items-center px-4 md:px-8 relative z-40">
+    <header
+      className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary/10 shadow-sm flex items-center px-4 md:px-8 relative z-40"
+      style={{ borderBottomWidth: '0.5px' }}
+    >
       {/* Left section - Logo and Mobile Controls */}
       <div className="flex items-center gap-2 md:gap-6">
         <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg hidden md:flex">

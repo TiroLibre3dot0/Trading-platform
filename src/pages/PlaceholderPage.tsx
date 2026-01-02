@@ -29,7 +29,13 @@ export default function PlaceholderPage({ title }:{title?:string}){
   const page = (title||'').toLowerCase();
 
   // Shared small helpers
-  const fmtMoney = (v: any) => typeof v === 'number' ? `$${v.toLocaleString()}` : v;
+  const moneyFormatter = useMemo(() => new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }), []);
+  const fmtMoney = (v: any) => typeof v === 'number' ? moneyFormatter.format(v) : v;
   const recentInstruments = useMemo(()=> mock.markets.slice(0,10), []);
 
   // Trade view now extracted to TradePage.tsx
