@@ -9,26 +9,35 @@ const UserAvatar = ({ name }) => (
   <div className="h-9 w-9 rounded-full bg-slate-700 flex items-center justify-center text-sm font-semibold text-white">{name.split(' ')[0][0]}</div>
 );
 
-const moneyFormatter = new Intl.NumberFormat('it-IT', {
+const basicNumber = new Intl.NumberFormat('en-US', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+});
+
+const bonusMoney = new Intl.NumberFormat('it-IT', {
   style: 'currency',
   currency: 'EUR',
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
 
-// Professional money formatting - consistent, elegant, locale-aware
-const formatCurrency = (value, showSign = false) => {
+// Default (non-bonus) formatting: compact, serious
+const formatMoney = (value, showSign = false) => {
   const num = Number(value);
   if (!Number.isFinite(num)) return '—';
-
+  const abs = basicNumber.format(Math.abs(num));
   if (showSign) {
-    const abs = moneyFormatter.format(Math.abs(num));
-    if (num > 0) return `+${abs}`;
-    if (num < 0) return `-${abs}`;
-    return moneyFormatter.format(0);
+    if (num > 0) return `+$${abs}`;
+    if (num < 0) return `-$${abs}`;
   }
+  return `$${num < 0 ? '-' : ''}${abs}`.replace('$-', '-$');
+};
 
-  return moneyFormatter.format(num);
+// Bonus formatting: premium currency style
+const formatBonus = (value) => {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return '—';
+  return bonusMoney.format(num);
 };
 
 // Mock notifications data
@@ -133,10 +142,24 @@ const mockEconomicData = [
 export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuToggle }) {
   const navigate = useNavigate();
   const acct = accounts.find(a => a.id === selectedAccountId) || accounts[0];
-  const { accountMode } = useAppPreferences();
+  const { accountMode, setAccountMode } = useAppPreferences();
   const acctData = mock.accounts.find(a => (accountMode==='demo' ? a.type==='Demo' : a.type==='Live')) || mock.accounts[0];
   const kpis = mock.kpis || {};
   const display = accountMode === 'demo' ? mock.accounts.find(a=>a.type==='Demo') : mock.accounts.find(a=>a.type==='Live');
+
+  // Keep selected account and accountMode in sync
+  useEffect(() => {
+    const desiredType = accountMode === 'demo' ? 'Demo' : 'Live';
+    const desired = accounts.find(a => a.type === desiredType);
+    if (desired && desired.id !== acct.id) {
+      onAccountChange && onAccountChange(desired.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountMode]);
+
+  const plLast30 = accountMode === 'demo' ? 0 : (mock.plLast30 ?? kpis.plLast30 ?? 0);
+  const marginUsed = accountMode === 'demo' ? 0 : (kpis.marginUsed ?? 0);
+  const bonusValue = accountMode === 'demo' ? 0 : (kpis.bonus ?? 0);
   
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
@@ -228,7 +251,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
   const unreadCount = mockNotifications.filter(n => !n.read).length;
   return (
     <header
-      className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary/10 shadow-sm flex items-center px-4 md:px-8 relative z-40"
+      className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary/5 shadow-sm flex items-center px-4 md:px-8 relative z-40"
       style={{ borderBottomWidth: '0.5px' }}
     >
       {/* Left section - Logo and Mobile Controls */}
@@ -324,15 +347,15 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
                 Equity
               </div>
               <div className="text-lg text-theme-primary font-semibold transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                {hideNumbers ? '••••••' : formatCurrency(display?.equity || 0)}
+                {hideNumbers ? '••••••' : formatMoney(display?.equity || 0)}
               </div>
             </div>
             <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg">
               <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
                 Available
               </div>
-              <div className="text-lg text-theme-primary font-semibold transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                {hideNumbers ? '••••••' : formatCurrency(display?.balance || 0)}
+              <div className="text-lg text-theme-primary font-medium transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+                {hideNumbers ? '••••••' : formatMoney(display?.balance || 0)}
               </div>
             </div>
           </div>
@@ -348,20 +371,20 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
                 P/L
               </div>
-              <div className={`text-lg font-semibold transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] ${
-                !hideNumbers && (mock.plLast30 || 0) >= 0 
-                  ? 'text-green-400 group-hover:text-green-300 group-hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.4)] animate-pulse' 
+              <div className={`text-lg font-medium transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] ${
+                !hideNumbers && (plLast30 || 0) >= 0 
+                  ? 'text-green-400 group-hover:text-green-300 group-hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.4)]'
                   : 'text-red-400 group-hover:text-red-300 group-hover:drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]'
               }`}>
-                {hideNumbers ? '••••••' : formatCurrency(mock.plLast30 || 0, true)}
+                {hideNumbers ? '••••••' : formatMoney(plLast30 || 0, true)}
               </div>
             </div>
             <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg">
               <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
                 Margin
               </div>
-              <div className="text-lg text-theme-primary font-semibold transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                {hideNumbers ? '••••••' : formatCurrency(mock.kpis?.marginUsed || 0)}
+              <div className="text-lg text-theme-primary font-medium transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+                {hideNumbers ? '••••••' : formatMoney(marginUsed)}
               </div>
             </div>
           </div>
@@ -383,7 +406,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               Bonus
             </div>
             <div className="text-lg text-theme-primary font-semibold transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] relative">
-              {hideNumbers ? '••••••' : formatCurrency(mock.kpis?.bonus || 0)}
+              {hideNumbers ? '••••••' : formatBonus(bonusValue)}
               {/* Subtle shimmer effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
             </div>
@@ -431,6 +454,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
                     key={account.id}
                     onClick={() => {
                       onAccountChange && onAccountChange(account.id);
+                      setAccountMode && setAccountMode(account.type.toLowerCase() === 'demo' ? 'demo' : 'live');
                       setShowAccountDropdown(false);
                     }}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-theme-tertiary transition-colors ${
@@ -440,7 +464,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
                     <div className="flex justify-between items-center">
                       <span>{account.id}</span>
                       <span className="text-theme-secondary text-xs">
-                        {hideNumbers ? '••••••' : formatCurrency(account.balance)}
+                        {hideNumbers ? '••••••' : formatMoney(account.balance)}
                       </span>
                     </div>
                   </button>
@@ -600,6 +624,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
                     key={account.id}
                     onClick={() => {
                       onAccountChange && onAccountChange(account.id);
+                      setAccountMode && setAccountMode(account.type.toLowerCase() === 'demo' ? 'demo' : 'live');
                       setMobileSheet(null);
                     }}
                     className={`w-full text-left rounded-lg border transition-colors p-4 ${
@@ -611,11 +636,11 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-sm font-semibold text-theme-primary">{account.id}</div>
                       <div className="text-sm text-theme-primary">
-                        {hideNumbers ? '••••••' : formatCurrency(account.balance)}
+                        {hideNumbers ? '••••••' : formatMoney(account.balance)}
                       </div>
                     </div>
                     <div className="text-xs text-theme-secondary mt-1">
-                      {accountMode === 'demo' ? 'Demo' : 'Live'}
+                      {account.type}
                       {account.id === acct.id ? ' • Selected' : ''}
                     </div>
                   </button>

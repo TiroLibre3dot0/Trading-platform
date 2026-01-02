@@ -28,14 +28,45 @@ export default function PlaceholderPage({ title }:{title?:string}){
   const navigate = useNavigate();
   const page = (title||'').toLowerCase();
 
+  const { accountMode } = useAppPreferences();
+
   // Shared small helpers
-  const moneyFormatter = useMemo(() => new Intl.NumberFormat('it-IT', {
+  const bonusFormatter = useMemo(() => new Intl.NumberFormat('it-IT', {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }), []);
-  const fmtMoney = (v: any) => typeof v === 'number' ? moneyFormatter.format(v) : v;
+
+  const fmtMoney = (v: any) => typeof v === 'number' ? `$${v.toLocaleString()}` : v;
+  const fmtBonus = (v: any) => typeof v === 'number' ? bonusFormatter.format(v) : v;
+
+  const activeAccount = useMemo(() => {
+    const desired = accountMode === 'demo' ? 'Demo' : 'Live';
+    return mock.accounts.find(a => a.type === desired) || mock.accounts[0];
+  }, [accountMode]);
+
+  const derivedFunds = useMemo(() => {
+    if (accountMode === 'demo') {
+      const total = activeAccount.balance || 0;
+      return {
+        total,
+        available: total,
+        marginUsed: 0,
+        freeMargin: total,
+      };
+    }
+
+    const summary = mock.funds?.summary || { total: 0, available: 0, marginUsed: 0 };
+    return {
+      total: summary.total ?? 0,
+      available: summary.available ?? 0,
+      marginUsed: summary.marginUsed ?? 0,
+      freeMargin: mock.kpis?.freeMargin ?? summary.available ?? 0,
+    };
+  }, [accountMode, activeAccount]);
+
+  const derivedBonus = accountMode === 'demo' ? 0 : (mock.kpis?.bonus ?? 0);
   const recentInstruments = useMemo(()=> mock.markets.slice(0,10), []);
 
   // Trade view now extracted to TradePage.tsx
@@ -593,7 +624,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
           </div>
 
           <div className="mt-3 border-t border-slate-800 pt-3 flex items-center justify-between text-sm">
-            <div>Total exposure: <span className="font-medium">{fmtMoney(mock.kpis.inAccount - mock.kpis.freeMargin)}</span></div>
+            <div>Total exposure: <span className="font-medium">{fmtMoney(derivedFunds.total - derivedFunds.freeMargin)}</span></div>
             <div>Floating P/L: <span className={`font-medium ${mock.positions.reduce((s,p)=>s+p.pl,0)>=0 ? 'text-emerald-300' : 'text-rose-300'}`}>{(mock.positions.reduce((s,p)=>s+p.pl,0))>=0? '+' : ''}{mock.positions.reduce((s,p)=>s+p.pl,0)}</span></div>
           </div>
         </div>
@@ -742,7 +773,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
               </div>
 
               <div className="mt-3 border-t border-slate-800 pt-3 flex items-center justify-between text-sm">
-                <div>Total exposure: <span className="font-medium">{fmtMoney(mock.kpis.inAccount - mock.kpis.freeMargin)}</span></div>
+                <div>Total exposure: <span className="font-medium">{fmtMoney(derivedFunds.total - derivedFunds.freeMargin)}</span></div>
                 <div>Floating P/L: <span className={`font-medium ${mock.positions.reduce((s,p)=>s+p.pl,0)>=0 ? 'text-emerald-300' : 'text-rose-300'}`}>{(mock.positions.reduce((s,p)=>s+p.pl,0))>=0? '+' : ''}{mock.positions.reduce((s,p)=>s+p.pl,0)}</span></div>
               </div>
             </div>
@@ -903,13 +934,13 @@ export default function PlaceholderPage({ title }:{title?:string}){
                 </div>
 
                 <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 md:p-5 max-w-3xl mx-auto">
-                  <SummaryRow label="Capital" value={fmtMoney(mock.accounts[0].balance)} />
-                  <SummaryRow label="Initial margin" value={fmtMoney(mock.funds.summary.marginUsed)} />
-                  <SummaryRow label="Maintenance margin" value={fmtMoney(Math.round((mock.funds.summary.marginUsed || 0) * 0.2))} />
-                  <SummaryRow label="Live bonus" value={fmtMoney((mock.kpis?.bonus ?? 0) as any)} />
+                  <SummaryRow label="Capital" value={fmtMoney(activeAccount.balance)} />
+                  <SummaryRow label="Initial margin" value={fmtMoney(derivedFunds.marginUsed)} />
+                  <SummaryRow label="Maintenance margin" value={fmtMoney(Math.round((derivedFunds.marginUsed || 0) * 0.2))} />
+                  <SummaryRow label="Live bonus" value={fmtBonus(derivedBonus)} />
                   <SummaryRow label="Pending bonus" value={fmtMoney(0)} />
                   <SummaryRow label="Refunds" value={fmtMoney(0)} />
-                  <SummaryRow label="Available to withdraw" value={fmtMoney(mock.funds.summary.available)} />
+                  <SummaryRow label="Available to withdraw" value={fmtMoney(derivedFunds.available)} />
                 </div>
 
                 <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
@@ -1534,7 +1565,7 @@ function ProfileView(){
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm text-slate-400">Profile overview</div>
-              <div className="text-xl font-semibold mt-1">{user.name} — {mock.accounts[0].id}</div>
+              <div className="text-xl font-semibold mt-1">{user.name} — {activeAccount.id}</div>
               <div className="text-sm text-slate-400 mt-1">{user.location} • Risk profile: {user.risk}</div>
             </div>
             <div className="flex items-center gap-2">
@@ -1552,7 +1583,7 @@ function ProfileView(){
             </div>
             <div className="bg-slate-800 p-3 rounded">
               <div className="text-xs text-slate-400">Account balances</div>
-              <div className="mt-2 text-lg font-semibold">${mock.kpis.inAccount.toLocaleString()}</div>
+              <div className="mt-2 text-lg font-semibold">{fmtMoney(activeAccount.balance)}</div>
               <div className="text-sm text-slate-400">Free margin: ${mock.kpis.freeMargin.toLocaleString()}</div>
             </div>
           </div>
