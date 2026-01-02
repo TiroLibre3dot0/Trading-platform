@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Gift } from 'lucide-react';
+import { Gift, X } from 'lucide-react';
 import TopNavbar from '../layout/TopNavbar';
 import PrimarySidebar from '../layout/PrimarySidebar';
 import SecondarySidebar from '../layout/SecondarySidebar';
@@ -18,6 +18,25 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
 
   const promoText =
     `Fund your account with at least €${PROMO_MIN_DEPOSIT_EUR} and get a €${PROMO_BONUS_EUR} bonus. Promo code: ${PROMO_CODE}. T&Cs apply.`;
+
+  const [promoDismissed, setPromoDismissed] = React.useState(() => {
+    try {
+      return window?.localStorage?.getItem('bw_promo_banner_dismissed') === '1';
+    } catch (_err) {
+      return false;
+    }
+  });
+
+  const dismissPromo = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setPromoDismissed(true);
+    try {
+      window?.localStorage?.setItem('bw_promo_banner_dismissed', '1');
+    } catch (_err) {
+      // ignore
+    }
+  };
 
   const handleMenuToggle = () => {
     if (typeof onMenuToggle === 'function') return onMenuToggle();
@@ -38,29 +57,40 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
       <TopNavbar selectedAccountId={selectedAccount} onAccountChange={setSelectedAccount} onMenuToggle={handleMenuToggle} />
 
       {/* Floating promo banner */}
-      <div
-        className="fixed inset-x-4 md:inset-x-6 z-30 pointer-events-none"
-        style={{ top: `${NAVBAR_H + 12}px` }}
-      >
-        <div className="max-w-4xl mx-auto pointer-events-auto">
-          <div
-            className="bg-theme-tertiary/90 text-theme-primary border border-theme-secondary/20 rounded-full px-4 py-2 md:px-5 md:py-2.5 shadow-lg backdrop-blur flex items-center gap-3 min-w-0 cursor-pointer"
-            role="button"
-            tabIndex={0}
-            onClick={goToDeposits}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') goToDeposits();
-            }}
-            title={promoText}
-            aria-label={promoText}
-          >
-            <Gift className="w-4 h-4 flex-shrink-0 text-blue-400" />
-            <div className="min-w-0 text-sm md:text-base font-medium truncate">
-              {promoText}
+      {!promoDismissed && (
+        <div
+          className="fixed inset-x-4 md:inset-x-6 z-30 pointer-events-none"
+          style={{ top: `${NAVBAR_H + 12}px` }}
+        >
+          <div className="max-w-4xl mx-auto pointer-events-auto">
+            <div
+              className="bg-theme-tertiary text-theme-primary border border-theme-secondary/30 ring-1 ring-blue-500/25 rounded-full px-4 py-2 md:px-5 md:py-2.5 shadow-xl backdrop-blur flex items-center gap-3 min-w-0 cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={goToDeposits}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') goToDeposits();
+              }}
+              title={promoText}
+              aria-label={promoText}
+            >
+              <Gift className="w-4 h-4 flex-shrink-0 text-blue-400" />
+              <div className="min-w-0 text-sm md:text-base font-semibold truncate">
+                {promoText}
+              </div>
+              <button
+                type="button"
+                className="ml-auto -mr-1 p-1 rounded-full hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60"
+                onClick={dismissPromo}
+                aria-label="Dismiss promo banner"
+                title="Dismiss"
+              >
+                <X className="w-4 h-4 text-theme-secondary" />
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div
         className="flex overflow-hidden relative"
