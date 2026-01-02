@@ -1553,8 +1553,19 @@ export default function PlaceholderPage({ title }:{title?:string}){
 }
 
 function ProfileView(){
+  const { accountMode } = useAppPreferences();
   const user = mock.user;
-  const docSummary = mock.documents.reduce((acc:any,d:any)=>{ acc[d.type] = (acc[d.type]||0)+1; return acc; }, {});
+
+  const activeAccount = useMemo(() => {
+    const desired = accountMode === 'demo' ? 'Demo' : 'Live';
+    return mock.accounts.find(a => a.type === desired) || mock.accounts[0];
+  }, [accountMode]);
+
+  const freeMargin = accountMode === 'demo'
+    ? (activeAccount.balance || 0)
+    : (mock.kpis?.freeMargin ?? 0);
+
+  const fmtMoney = (v: any) => typeof v === 'number' ? `$${v.toLocaleString()}` : v;
 
   return (
     <div className="h-full min-w-0 overflow-hidden p-4">
@@ -1584,7 +1595,7 @@ function ProfileView(){
             <div className="bg-slate-800 p-3 rounded">
               <div className="text-xs text-slate-400">Account balances</div>
               <div className="mt-2 text-lg font-semibold">{fmtMoney(activeAccount.balance)}</div>
-              <div className="text-sm text-slate-400">Free margin: ${mock.kpis.freeMargin.toLocaleString()}</div>
+              <div className="text-sm text-slate-400">Free margin: {fmtMoney(freeMargin)}</div>
             </div>
           </div>
 
