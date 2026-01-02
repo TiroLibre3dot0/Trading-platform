@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes promoShineSweep {
+  0% { transform: translateX(-65%); opacity: 0; }
+  10% { opacity: 1; }
+  50% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(65%); opacity: 0; }
+}
+
+.promo-attention-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.00) 35%,
+    rgba(255, 255, 255, 0.10) 50%,
+    rgba(255, 255, 255, 0.00) 65%,
+    transparent 100%
+  );
+  transform: translateX(-65%);
+  animation: promoShineSweep 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-attention-shine {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* Global layout rules to enforce fixed portal (no page scroll) */
 html, body, #root {
   height: 100%;

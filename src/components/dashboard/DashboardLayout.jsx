@@ -53,7 +53,7 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
         >
           <div className="max-w-4xl mx-auto pointer-events-auto">
             <div
-              className="bg-theme-tertiary text-theme-primary border border-theme-secondary/30 ring-1 ring-blue-500/25 rounded-full px-4 py-2 md:px-5 md:py-2.5 shadow-xl backdrop-blur flex items-center gap-3 min-w-0 cursor-pointer"
+              className="relative overflow-hidden bg-theme-tertiary text-theme-primary border border-theme-secondary/30 ring-1 ring-blue-500/25 rounded-full px-4 py-2 md:px-5 md:py-2.5 shadow-xl backdrop-blur flex items-center gap-3 min-w-0 cursor-pointer"
               role="button"
               tabIndex={0}
               onClick={goToDeposits}
@@ -63,6 +63,7 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
               title={promoText}
               aria-label={promoText}
             >
+              <span className="promo-attention-shine" aria-hidden="true" />
               <div className="relative flex-shrink-0">
                 <span className="absolute inset-0 rounded-full bg-blue-500/15 motion-safe:animate-pulse motion-reduce:animate-none" />
                 <Gift className="relative w-4 h-4 text-blue-400" />
