@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FiGift } from "react-icons/fi";
 import { useAuth } from "../../../context/AuthContext";
 import AuthFormCard from "../components/AuthFormCard";
 
@@ -147,7 +148,21 @@ export default function SignupPage() {
   );
 
   return (
-    <AuthFormCard title="Let’s get you set up" subtitle="A couple quick details and you’re in.">
+    <AuthFormCard
+      title="Let’s get you set up"
+      subtitle="A couple quick details and you’re in."
+      headerAction={
+        <button
+          type="button"
+          onClick={() => navigate("/bonus")}
+          aria-label="Welcome bonus"
+          className="relative grid h-8 w-8 place-items-center overflow-hidden rounded-lg border border-rose-200 bg-rose-50/80 text-rose-600 transition hover:bg-rose-100/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+        >
+          <span className="promo-attention-shine opacity-80" aria-hidden="true" />
+          <FiGift className="relative h-4 w-4 animate-pulse" />
+        </button>
+      }
+    >
       <form onSubmit={onSubmit} className="space-y-2" noValidate>
         <Stepper />
 

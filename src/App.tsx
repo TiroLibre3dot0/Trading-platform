@@ -5,6 +5,7 @@ import RequireAuth from './components/auth/RequireAuth'
 import AuthShell from './features/auth/pages/AuthShell'
 import Login from './features/auth/pages/LoginPage'
 import Signup from './features/auth/pages/SignupPage'
+import Bonus from './features/auth/pages/BonusPage'
 import PremiumRewardsPage from './pages/PremiumRewardsPage'
 import SocialTradingPage from './pages/SocialTradingPage'
 import TradePage from './pages/TradePage'
@@ -28,6 +29,7 @@ export default function App() {
         <Route element={<AuthShell />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/bonus" element={<Bonus />} />
         </Route>
         <Route element={<RequireAuth />}>
           <Route element={<AppShell />}>

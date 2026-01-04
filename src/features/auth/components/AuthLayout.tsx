@@ -6,12 +6,12 @@ const cx = (...parts: Array<string | false | null | undefined>) => parts.filter(
 export default function AuthLayout({
   children,
   backgroundImageUrl,
-  panelSide = "left",
+  panelPosition = "left",
   panelSize = "normal",
 }: {
   children: React.ReactNode;
   backgroundImageUrl?: string;
-  panelSide?: "left" | "right";
+  panelPosition?: "left" | "mid" | "right";
   panelSize?: "normal" | "wide";
 }) {
   useEffect(() => {
@@ -60,7 +60,8 @@ export default function AuthLayout({
           <div
             className={cx(
               "auth-panel",
-              panelSide === "right" && "auth-panel--right",
+              panelPosition === "mid" && "auth-panel--mid",
+              panelPosition === "right" && "auth-panel--right",
               panelSize === "wide" && "auth-panel--wide"
             )}
           >
