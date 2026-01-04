@@ -33,6 +33,135 @@
   }
 }
 
+/* Auth scene (login/signup) */
+@keyframes authGridDrift {
+  0% { background-position: 0px 0px; opacity: 0.08; }
+  50% { background-position: 60px 30px; opacity: 0.11; }
+  100% { background-position: 0px 0px; opacity: 0.08; }
+}
+
+@keyframes authFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes authGlowPulse {
+  0% { transform: translateY(0px) scale(1); opacity: 0.18; }
+  50% { transform: translateY(10px) scale(1.04); opacity: 0.24; }
+  100% { transform: translateY(0px) scale(1); opacity: 0.18; }
+}
+
+.auth-grid {
+  animation: authGridDrift 18s ease-in-out infinite;
+}
+
+.auth-noise {
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.08), transparent 55%),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.06), transparent 60%),
+    radial-gradient(circle at 60% 30%, rgba(0, 0, 0, 0.20), transparent 55%);
+}
+
+.auth-vignette {
+  background-image:
+    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.06), transparent 55%),
+    radial-gradient(circle at 50% 90%, rgba(0, 0, 0, 0.38), transparent 55%);
+}
+
+.auth-float {
+  animation: authFloat 8s ease-in-out infinite;
+}
+
+.auth-glow {
+  animation: authGlowPulse 10s ease-in-out infinite;
+}
+
+.auth-glow2 {
+  animation: authGlowPulse 12s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-grid,
+  .auth-float,
+  .auth-glow,
+  .auth-glow2 {
+    animation: none;
+  }
+}
+
+@keyframes authTickerScroll {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-48px); }
+}
+
+@keyframes authPulseBar {
+  0% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+  100% { opacity: 0.45; }
+}
+
+.auth-ticker-scroll {
+  animation: authTickerScroll 7s linear infinite;
+}
+
+.auth-pulse {
+  animation: authPulseBar 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-ticker-scroll,
+  .auth-pulse {
+    animation: none;
+  }
+}
+
+/* Auth panel positioning: fixed on mobile, slides on desktop */
+.auth-panel {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 100%;
+  --auth-panel-width: 420px;
+  max-width: var(--auth-panel-width, 420px);
+  transition: left 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: left;
+}
+
+.auth-panel--wide {
+  --auth-panel-width: 520px;
+}
+
+@media (min-width: 1024px) {
+  .auth-panel--wide {
+    --auth-panel-width: 560px;
+  }
+}
+
+@media (min-width: 768px) {
+  .auth-panel--right {
+    left: calc(100% - var(--auth-panel-width, 420px));
+  }
+}
+
+/* Auth card sizing: keep popups consistent and scroll content inside */
+.auth-card {
+  height: calc(100vh - 110px);
+}
+
+@supports (height: 100dvh) {
+  .auth-card {
+    height: calc(100dvh - 110px);
+  }
+}
+
+@media (min-width: 768px) {
+  .auth-card {
+    height: min(70vh, 660px);
+  }
+}
+
 /* Global layout rules to enforce fixed portal (no page scroll) */
 html, body, #root {
   height: 100%;
@@ -105,11 +234,11 @@ html, body, #root {
 /* Custom animations for trading platform */
 @keyframes slide-in-right {
   from {
-    transform: translateX(100%);
+    transform: translateX(12px) scale(0.995);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
     opacity: 1;
   }
 }
@@ -213,7 +342,8 @@ html, body, #root {
 }
 
 .animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out;
+  animation: slide-in-right 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 
 .animate-slide-in-left {

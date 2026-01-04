@@ -255,12 +255,19 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
     >
       {/* Left section - Logo and Mobile Controls */}
       <div className="flex items-center gap-2 md:gap-6">
-        <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg hidden md:flex">
-          <img 
-            src="/Logo.png" 
-            alt="Bullwaves" 
-            className="h-10 w-auto transition-all duration-300 hover:scale-105 cursor-pointer"
-          />
+        <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-lg">
+          <button
+            type="button"
+            onClick={() => navigate('/trade')}
+            className="rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary/40"
+            aria-label="Go to Trade"
+          >
+            <img 
+              src="/Logo.png" 
+              alt="Bullwaves" 
+              className="h-9 w-auto transition-all duration-300 hover:scale-105 cursor-pointer md:h-10"
+            />
+          </button>
         </div>
 
         {/* Mobile Controls Row */}

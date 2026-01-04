@@ -4,6 +4,7 @@ import DashboardLayout from '../dashboard/DashboardLayout';
 import SettingsSlideover from './SettingsSlideover';
 import { DemoProvider, useDemo } from '../../context/DemoContext';
 import DemoNarrativa from '../demo/DemoNarrativa';
+import { useAuth } from '../../context/AuthContext';
 
 // Component to render DemoNarrativa with access to demo context
 function DemoNarrativaWrapper() {
@@ -13,6 +14,7 @@ function DemoNarrativaWrapper() {
 
 export default function AppShell(){
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [menuCollapsed, setMenuCollapsed] = useState(true);
   const [secondaryOpen, setSecondaryOpen] = useState(false);
   const [primarySelection, setPrimarySelection] = useState('trade');
@@ -44,6 +46,11 @@ export default function AppShell(){
   const handleSecondarySelect = (key:any) => {
     setSecondarySelection(key);
     const normalized = (''+key).toLowerCase();
+    if (normalized === 'logout') {
+      try { signOut(); } catch (_err) {}
+      navigate('/login', { replace: true });
+      return;
+    }
     if (normalized.includes('account-settings') || normalized.includes('account settings')) navigate('/account-settings');
     if (normalized.includes('profile')) navigate('/profile');
     else if (normalized.includes('document')) navigate('/documents');
