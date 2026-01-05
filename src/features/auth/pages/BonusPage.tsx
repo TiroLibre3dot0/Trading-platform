@@ -6,9 +6,9 @@ import AuthFormCard from "../components/AuthFormCard";
 export default function BonusPage() {
   return (
     <AuthFormCard title="Regalo di benvenuto" subtitle="Sblocca il bonus del 100% sul deposito.">
-      <div className="space-y-3">
+      <div className="space-y-4">
         {/* Gift hero */}
-        <div className="relative overflow-hidden rounded-2xl bg-white/70 px-4 py-3 ring-1 ring-black/5">
+        <div className="relative overflow-hidden rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-black/5">
           <div
             className="absolute inset-0 opacity-100"
             style={{
@@ -24,7 +24,7 @@ export default function BonusPage() {
               <FiGift className="h-6 w-6" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] font-extrabold uppercase tracking-wide text-navy-700">Welcome bonus</div>
+              <div className="text-[11px] font-extrabold uppercase tracking-wide text-navy-700">Bonus di benvenuto</div>
               <div className="text-lg font-extrabold text-navy-900 leading-tight">100% del deposito</div>
             </div>
           </div>
@@ -36,6 +36,14 @@ export default function BonusPage() {
             <div className="rounded-full bg-white/70 px-2 py-0.5 text-[11px] font-semibold text-navy-700 ring-1 ring-black/5">
               Subito disponibile
             </div>
+          </div>
+        </div>
+
+        {/* Brand highlight */}
+        <div className="pt-1">
+          <img src="/Logo.png" alt="Bullwaves" className="mx-auto h-10 w-auto" />
+          <div className="mt-2 text-center text-[13px] font-semibold text-navy-800">
+            Un regalo esclusivo Bullwaves — attivalo ora
           </div>
         </div>
 
