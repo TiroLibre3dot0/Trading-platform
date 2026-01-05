@@ -23,7 +23,6 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [submitError, setSubmitError] = useState<string>("");
-  const [showSocial, setShowSocial] = useState(false);
 
   useEffect(() => {
     if (user) navigate(fromPath || "/trade", { replace: true });
@@ -83,50 +82,37 @@ export default function LoginPage() {
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
-        {/* Social login (collapsed to save vertical space) */}
-        <div>
+        <div className="flex items-center justify-center gap-3">
           <button
             type="button"
-            onClick={() => setShowSocial((s) => !s)}
-            className="tp-login-btn"
-            style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.10)' }}
+            onClick={() => socialSignIn("google")}
+            className="h-10 w-10 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
+            aria-label="Continue with Google"
+            title="Google"
           >
-            Social login
+            <FaGoogle className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
           </button>
-          {showSocial ? (
-            <div className="mt-2 flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => socialSignIn("google")}
-                className="h-10 w-10 rounded-full"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-                aria-label="Continue with Google"
-                title="Google"
-              >
-                <FaGoogle className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={() => socialSignIn("apple")}
-                className="h-10 w-10 rounded-full"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-                aria-label="Continue with Apple"
-                title="Apple"
-              >
-                <FaApple className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={() => socialSignIn("facebook")}
-                className="h-10 w-10 rounded-full"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-                aria-label="Continue with Facebook"
-                title="Facebook"
-              >
-                <FaFacebookF className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-              </button>
-            </div>
-          ) : null}
+          <button
+            type="button"
+            onClick={() => socialSignIn("apple")}
+            className="h-10 w-10 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
+            aria-label="Continue with Apple"
+            title="Apple"
+          >
+            <FaApple className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => socialSignIn("facebook")}
+            className="h-10 w-10 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
+            aria-label="Continue with Facebook"
+            title="Facebook"
+          >
+            <FaFacebookF className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
+          </button>
         </div>
 
             <div>

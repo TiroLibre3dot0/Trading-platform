@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaApple, FaFacebookF, FaGoogle } from "react-icons/fa";
 import { FiGift } from "react-icons/fi";
 import { useAuth } from "../../../context/AuthContext";
 import AuthFormCard from "../components/AuthFormCard";
@@ -140,6 +141,11 @@ export default function SignupPage() {
 
   const fieldError = (key: string) => (touched[key] ? errors[key] : "");
 
+  const socialSignIn = (provider: "google" | "apple" | "facebook") => {
+    // Placeholder (UI only): keep current auth contract
+    setSubmitError(`Social login (${provider}) isn't wired yet.`);
+  };
+
   const Stepper = () => (
     <div className="mb-2 flex items-center justify-center gap-2" aria-label="Signup steps">
       <div className={cx("h-2.5 w-2.5 rounded-full", step === 1 ? "bg-brand-600" : "bg-black/20")} aria-hidden="true" />
@@ -164,6 +170,39 @@ export default function SignupPage() {
       }
     >
       <form onSubmit={onSubmit} className="space-y-2" noValidate>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => socialSignIn("google")}
+            className="h-10 w-10 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
+            aria-label="Continue with Google"
+            title="Google"
+          >
+            <FaGoogle className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => socialSignIn("apple")}
+            className="h-10 w-10 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
+            aria-label="Continue with Apple"
+            title="Apple"
+          >
+            <FaApple className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => socialSignIn("facebook")}
+            className="h-10 w-10 rounded-full"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
+            aria-label="Continue with Facebook"
+            title="Facebook"
+          >
+            <FaFacebookF className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
+          </button>
+        </div>
+
         <Stepper />
 
         {step === 1 ? (
