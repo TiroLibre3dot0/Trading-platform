@@ -127,10 +127,10 @@ export default function PlaceholderPage({ title }:{title?:string}){
     const list = useMemo(()=> mock.markets.filter(m => cat==='all' ? true : m.category===cat), [cat]);
 
     return (
-      <div className="h-full min-w-0 overflow-auto p-4">
+      <div className="h-full min-w-0 p-4">
         <Header title="Markets" subtitle="Discover instruments and trade with price transparency" Icon={BarChart2} />
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-[calc(100%-64px)] flex gap-3 overflow-auto">
-          <div className="w-2/3 overflow-auto" style={{minHeight:0}}>
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 flex gap-3">
+          <div className="w-2/3" style={{minHeight:0}}>
             <div className="flex gap-2 mb-3">
               {categories.map(c=> (
                 <button key={c} onClick={()=>setCat(c)} className={`text-xs px-3 py-1 rounded-full ${cat===c? 'bg-slate-700 text-white' : 'bg-transparent text-slate-400'}`}>{c==='all'? 'All' : c.charAt(0).toUpperCase()+c.slice(1)}</button>
@@ -157,7 +157,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
             </table>
           </div>
 
-          <div className="w-1/3 bg-slate-800 p-3 rounded overflow-auto" style={{minHeight:0}}>
+          <div className="w-1/3 bg-slate-800 p-3 rounded" style={{minHeight:0}}>
             <div className="text-sm text-slate-300">Preview</div>
             {mock.markets.filter(m=>m.symbol===selected).map(m=> (
               <div key={m.symbol} className="mt-3">
@@ -263,12 +263,11 @@ export default function PlaceholderPage({ title }:{title?:string}){
     );
 
     return (
-      <div className="h-full min-w-0 overflow-auto p-4">
+      <div className="h-full min-w-0 p-4">
         <Header title="Menu" subtitle="Profile overview" Icon={User} />
 
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] overflow-auto flex flex-col">
-          <div className="flex-1 overflow-auto" style={{ minHeight: 0 }}>
-            <div className="max-w-5xl mx-auto">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4">
+          <div className="max-w-5xl mx-auto">
               <div className="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 mb-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -365,7 +364,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
                   </div>
                 </div>
               </div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -911,9 +910,9 @@ export default function PlaceholderPage({ title }:{title?:string}){
     );
 
     return (
-      <div className="h-full min-w-0 overflow-auto p-4">
+      <div className="h-full min-w-0 p-4">
         <Header title="Funds" subtitle="Manage your funds, deposits, withdrawals, and transaction history" Icon={Wallet} />
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] flex flex-col overflow-auto">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 flex flex-col">
           <SectionTabs
             value={tab}
             onChange={setTab}
@@ -926,8 +925,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
           />
 
           {tab === 'overview' && (
-            <div className="flex-1 overflow-auto" style={{ minHeight: 0 }}>
-              <div className="max-w-5xl mx-auto">
+            <div className="max-w-5xl mx-auto">
                 <div className="text-center mt-1 mb-4">
                   <div className="text-lg font-semibold">Funds management</div>
                   <div className="text-xs text-slate-400 mt-1">Deposit, withdraw, and keep track of your account balances.</div>
@@ -1007,28 +1005,24 @@ export default function PlaceholderPage({ title }:{title?:string}){
 
                 <div className="mt-6 bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 max-w-4xl mx-auto">
                   <div className="text-xs text-slate-400 mb-2">Recent activity</div>
-                  <div className="overflow-auto" style={{ maxHeight: 220 }}>
-                    <table className="w-full text-sm">
-                      <tbody>
-                        {mock.funds.history.slice(0, 10).map(h=> (
-                          <tr key={h.id} className="border-t border-slate-700/70">
-                            <td className="py-2 text-slate-300">{h.date}</td>
-                            <td className="py-2 text-slate-200">{h.method}</td>
-                            <td className="py-2 text-slate-100">{fmtMoney(h.amount)}</td>
-                            <td className="py-2 text-slate-400 text-xs">{h.status}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <table className="w-full text-sm">
+                    <tbody>
+                      {mock.funds.history.slice(0, 10).map(h=> (
+                        <tr key={h.id} className="border-t border-slate-700/70">
+                          <td className="py-2 text-slate-300">{h.date}</td>
+                          <td className="py-2 text-slate-200">{h.method}</td>
+                          <td className="py-2 text-slate-100">{fmtMoney(h.amount)}</td>
+                          <td className="py-2 text-slate-400 text-xs">{h.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              </div>
             </div>
           )}
 
           {tab === 'deposits' && (
-            <div className="flex-1 overflow-auto" style={{ minHeight: 0 }}>
-              <div className="max-w-5xl mx-auto">
+            <div className="max-w-5xl mx-auto">
                 <div className="flex items-center justify-between gap-4 mt-1 mb-4">
                   <div>
                     <div className="text-lg font-semibold">Deposits</div>
@@ -1106,7 +1100,6 @@ export default function PlaceholderPage({ title }:{title?:string}){
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
           )}
 

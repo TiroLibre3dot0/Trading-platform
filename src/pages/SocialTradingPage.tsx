@@ -12,13 +12,13 @@ export default function SocialTradingPage(){
       <div className="flex flex-col gap-4 h-full" style={{minHeight:0}}>
         <header className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">Social Trading</h1>
+            <h1 className="text-xl md:text-2xl font-semibold">Social Trading</h1>
             <div className="text-slate-400 text-sm">Discover providers, copy strategies, and follow top traders.</div>
           </div>
               <div className="flex items-center gap-2">
-                <button className="px-3 py-1 rounded-md bg-slate-800 flex items-center gap-2"><Star className="w-4 h-4"/> Providers</button>
-                <button className="px-3 py-1 rounded-md bg-emerald-600 text-black flex items-center gap-2"><Copy className="w-4 h-4"/> Start copying</button>
-                <button className="px-3 py-1 rounded-md bg-slate-800 flex items-center gap-2"><Activity className="w-4 h-4"/> Activity</button>
+                <button className="px-2 py-1 rounded-md bg-slate-800 flex items-center gap-2 text-sm"><Star className="w-4 h-4"/> Providers</button>
+                <button className="px-2 py-1 rounded-md bg-emerald-600 text-black flex items-center gap-2 text-sm"><Copy className="w-4 h-4"/> Start copying</button>
+                <button className="px-2 py-1 rounded-md bg-slate-800 flex items-center gap-2 text-sm"><Activity className="w-4 h-4"/> Activity</button>
               </div>
         </header>
 
@@ -33,7 +33,7 @@ export default function SocialTradingPage(){
               </div>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 overflow-auto" style={{minHeight:0}}>
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-3" style={{minHeight:0}}>
               {providers.map(p => (
                 <div key={p.id} className="flex items-center justify-between py-3 border-b last:border-b-0">
                   <div className="flex items-center gap-3">
@@ -55,7 +55,7 @@ export default function SocialTradingPage(){
               ))}
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 mt-2 overflow-auto" style={{minHeight:0}}>
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 mt-2" style={{minHeight:0}}>
               <div className="font-semibold mb-2">Social Feed</div>
                 {socialMock.feed.map(item => (
                   <div key={item.id} className="py-2 border-b last:border-b-0">
@@ -67,7 +67,7 @@ export default function SocialTradingPage(){
           </div>
 
           <aside className="w-96 flex flex-col gap-3 min-w-0">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 overflow-auto">
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-3">
               <div className="font-semibold mb-2">Leaderboard</div>
               {socialMock.leaderboard.map((l, i) => (
                 <div key={i} className="flex items-center justify-between py-3 border-b last:border-b-0">

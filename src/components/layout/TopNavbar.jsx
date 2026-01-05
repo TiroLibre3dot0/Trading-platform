@@ -327,99 +327,64 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
         </button>
       </div>
 
-      {/* Center section - Financial Metrics */}
-      <div className="flex-1 2xl:flex justify-center hidden">
-        <div className="flex items-center gap-16">
-        {/* Toggle Numbers Visibility */}
-        <button
-          onClick={() => setHideNumbers(!hideNumbers)}
-          aria-label={hideNumbers ? "Show numbers" : "Hide numbers"}
-          className="p-2 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 group"
-          title={hideNumbers ? "Show financial numbers" : "Hide financial numbers"}
-        >
-          {hideNumbers ? (
-            <EyeOff className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary transition-colors" />
-          ) : (
-            <Eye className="w-4 h-4 text-theme-secondary group-hover:text-theme-primary transition-colors" />
-          )}
-        </button>
-
-        {/* Financial Metrics - Centered layout */}
-        <div className="flex items-center gap-12">
-          {/* Primary metrics - Equity and Available */}
-          <div className="flex items-center gap-10">
-            <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg">
-              <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
-                Equity
-              </div>
-              <div className="text-lg text-theme-primary font-normal transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                {hideNumbers ? '••••••' : formatMoney(display?.equity || 0)}
-              </div>
+      {/* Center section - Financial Metrics (compact on laptop) */}
+      <div className="flex-1 hidden lg:flex justify-center">
+        <div className="flex items-center gap-6 xl:gap-10">
+          <div className="text-center">
+            <div className="text-[10px] xl:text-xs text-theme-secondary mb-0.5 uppercase tracking-wide font-medium">
+              Equity
             </div>
-            <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg">
-              <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
-                Available
-              </div>
-              <div className="text-lg text-theme-primary font-normal transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                {hideNumbers ? '••••••' : formatMoney(display?.balance || 0)}
-              </div>
+            <div className="text-base xl:text-lg text-theme-primary font-normal tabular-nums">
+              {hideNumbers ? '••••••' : formatMoney(display?.equity || 0)}
             </div>
           </div>
 
-          {/* Separator via spacing */}
-          <div className="w-px h-12 bg-gradient-to-b from-transparent via-theme-secondary/30 to-transparent transition-all duration-300 hover:via-theme-secondary/50 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent translate-y-[-100%] hover:translate-y-[100%] transition-transform duration-1000 ease-out"></div>
+          <div className="text-center">
+            <div className="text-[10px] xl:text-xs text-theme-secondary mb-0.5 uppercase tracking-wide font-medium">
+              Available
+            </div>
+            <div className="text-base xl:text-lg text-theme-primary font-normal tabular-nums">
+              {hideNumbers ? '••••••' : formatMoney(display?.balance || 0)}
+            </div>
           </div>
 
-          {/* Secondary metrics - P/L and Margin */}
-          <div className="flex items-center gap-10">
-            <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg">
-              <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
-                P/L
-              </div>
-              <div className={`text-lg font-normal transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] ${
-                !hideNumbers && (plLast30 || 0) >= 0 
-                  ? 'text-green-400 group-hover:text-green-300 group-hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.4)]'
-                  : 'text-red-400 group-hover:text-red-300 group-hover:drop-shadow-[0_0_12px_rgba(239,68,68,0.4)]'
-              }`}>
-                {hideNumbers ? '••••••' : formatMoney(plLast30 || 0, true)}
-              </div>
+          <div className="hidden xl:block w-px h-9 bg-theme-secondary/25" />
+
+          <div className="text-center">
+            <div className="text-[10px] xl:text-xs text-theme-secondary mb-0.5 uppercase tracking-wide font-medium">
+              P/L
             </div>
-            <div className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg">
-              <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
-                Margin
-              </div>
-              <div className="text-lg text-theme-primary font-normal transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+            <div
+              className={`text-base xl:text-lg font-normal tabular-nums ${
+                !hideNumbers && (plLast30 || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+              }`}
+            >
+              {hideNumbers ? '••••••' : formatMoney(plLast30 || 0, true)}
+            </div>
+          </div>
+
+          <div className="hidden xl:flex items-center gap-8">
+            <div className="text-center">
+              <div className="text-xs text-theme-secondary mb-0.5 uppercase tracking-wide font-medium">Margin</div>
+              <div className="text-lg text-theme-primary font-normal tabular-nums">
                 {hideNumbers ? '••••••' : formatMoney(marginUsed)}
               </div>
             </div>
+            <button
+              type="button"
+              onClick={goToDeposits}
+              className="text-center"
+              title="Go to Funds / Deposits"
+              aria-label="Go to Funds / Deposits"
+            >
+              <div className="text-xs text-theme-secondary mb-0.5 uppercase tracking-wide font-medium">Bonus</div>
+              <div className="text-lg text-theme-primary font-normal tabular-nums">
+                {hideNumbers ? '••••••' : formatBonus(bonusValue)}
+              </div>
+            </button>
           </div>
-
-          {/* Separator via spacing */}
-          <div className="w-px h-10 bg-gradient-to-b from-transparent via-theme-secondary/20 to-transparent transition-all duration-300 hover:via-theme-secondary/40 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent translate-y-[-100%] hover:translate-y-[100%] transition-transform duration-1000 ease-out"></div>
-          </div>
-
-          {/* Tertiary metric - Bonus */}
-          <button
-            type="button"
-            onClick={goToDeposits}
-            className="text-center group cursor-pointer transition-all duration-300 hover:scale-105 hover:drop-shadow-lg"
-            title="Go to Funds / Deposits"
-            aria-label="Go to Funds / Deposits"
-          >
-            <div className="text-xs text-theme-secondary mb-1 uppercase tracking-wide font-medium bg-gradient-to-r from-theme-secondary to-theme-primary bg-clip-text text-transparent transition-all duration-300 group-hover:from-theme-primary group-hover:to-theme-secondary">
-              Bonus
-            </div>
-            <div className="text-lg text-theme-primary font-normal transition-all duration-300 group-hover:text-theme-primary group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] relative">
-              {hideNumbers ? '••••••' : formatBonus(bonusValue)}
-              {/* Subtle shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
-            </div>
-          </button>
         </div>
-        </div>
-        </div>
+      </div>
 
       {/* Right section - Desktop Controls */}
       <div className="hidden md:flex items-center gap-6">

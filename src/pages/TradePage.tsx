@@ -58,7 +58,7 @@ const Toast = ({ message, type, onClose }: any) => {
 
 // MetaTrader-style components
 const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarketWatchToggle, onChartToggle, mtWebTraderUrl, onOpenMtWebTrader }: any) => (
-  <div className="bg-theme-secondary border-b border-theme-primary px-3 py-2 flex items-center justify-between flex-wrap gap-2 mobile-toolbar-compact" data-tour="chart-toolbar">
+  <div className="bg-theme-secondary border-b border-theme-primary px-2 py-1.5 lg:px-3 lg:py-2 flex items-center justify-between flex-wrap gap-2 mobile-toolbar-compact" data-tour="chart-toolbar">
     <div className="flex items-center gap-2 mobile-text-center">
       <span className="font-semibold text-theme-primary">{symbol}</span>
       <span className="text-sm text-theme-secondary hidden sm:inline">EURUSD</span>
@@ -135,8 +135,8 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
         </button>
       )}
     </div>
-    <div className="flex-1 overflow-auto scrollbar-invisible">
-      <table className="w-full text-xs">
+    <div className={isMobile ? 'flex-1 overflow-auto scrollbar-invisible' : 'flex-1'}>
+      <table className="w-full text-xs leading-tight">
         <thead className="bg-theme-tertiary">
           <tr>
             <th className="text-left px-1 py-1 text-theme-secondary">Symbol</th>
@@ -154,7 +154,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
             >
               <td className="px-1 py-1 text-theme-primary text-xs">{inst.symbol}</td>
               <td className="px-1 py-1 text-right text-theme-secondary text-xs">
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-1.5">
                   <span className="min-w-[50px] text-right">{inst.bid}</span>
                   <button
                     onClick={(e) => {
@@ -172,7 +172,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                         onOpenTradingPanel?.();
                       }
                     }}
-                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
+                    className="px-2 py-1 bg-red-600 hover:bg-red-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[52px] justify-center"
                     title={`Sell ${inst.symbol}`}
                   >
                     <TrendingDown className="w-3 h-3" />
@@ -181,7 +181,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                 </div>
               </td>
               <td className="px-1 py-1 text-right text-theme-secondary text-xs">
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-1.5">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -198,7 +198,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                         onOpenTradingPanel?.();
                       }
                     }}
-                    className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[60px] justify-center"
+                    className="px-2 py-1 bg-green-600 hover:bg-green-500 text-white text-xs rounded font-semibold transition-all duration-200 flex items-center gap-1 min-w-[52px] justify-center"
                     title={`Buy ${inst.symbol}`}
                   >
                     <TrendingUp className="w-3 h-3" />
@@ -743,7 +743,7 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
         }`}
       >
         {/* Symbol & Price Header */}
-        <div className="px-3 py-2 border-b border-theme-primary flex items-center justify-between">
+        <div className="px-2 py-1.5 lg:px-3 lg:py-2 border-b border-theme-primary flex items-center justify-between">
           <div className="flex items-center gap-2">
             {isMobile && (
               <button
@@ -753,11 +753,11 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
                 ← Market Watch
               </button>
             )}
-            <span className="font-semibold text-sm text-theme-primary">{symbol}</span>
+            <span className="font-semibold text-xs lg:text-sm text-theme-primary">{symbol}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="text-right">
-              <div className={`text-lg font-bold text-theme-primary transition-all duration-300 ${priceAnimation ? 'animate-price-update' : ''}`}>
+              <div className={`text-base lg:text-lg font-bold text-theme-primary transition-all duration-300 ${priceAnimation ? 'animate-price-update' : ''}`}>
                 {currentPrice}
               </div>
               <div className="text-xs text-green-400">
@@ -775,12 +775,12 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
         </div>
 
         {/* Side (BUY/SELL) selector */}
-        <div className="px-3 py-2 border-b border-theme-primary">
+        <div className="px-2 py-1.5 lg:px-3 lg:py-2 border-b border-theme-primary">
           <div className="grid grid-cols-2 gap-1">
             <button
               type="button"
               onClick={() => setSide('buy')}
-              className={`py-2 px-2 rounded text-xs font-semibold transition-all duration-200 ${
+              className={`py-1.5 px-2 rounded text-xs font-semibold transition-all duration-200 ${
                 side === 'buy'
                   ? 'bg-green-600 text-white'
                   : 'bg-theme-tertiary text-theme-secondary hover:bg-theme-primary'
@@ -791,7 +791,7 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
             <button
               type="button"
               onClick={() => setSide('sell')}
-              className={`py-2 px-2 rounded text-xs font-semibold transition-all duration-200 ${
+              className={`py-1.5 px-2 rounded text-xs font-semibold transition-all duration-200 ${
                 side === 'sell'
                   ? 'bg-red-600 text-white'
                   : 'bg-theme-tertiary text-theme-secondary hover:bg-theme-primary'
@@ -811,7 +811,7 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
           }
         >
           {/* Order Type Selection */}
-          <div className="px-3 py-2 border-b border-theme-primary">
+          <div className="px-2 py-1.5 lg:px-3 lg:py-2 border-b border-theme-primary">
             <div className="flex gap-1 mb-2">
               <button
                 onClick={() => setOrderType('market')}
@@ -829,7 +829,7 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
           </div>
 
           {/* Volume Input */}
-          <div className="px-3 py-2 border-b border-theme-primary">
+          <div className="px-2 py-1.5 lg:px-3 lg:py-2 border-b border-theme-primary">
             <label className="block text-xs font-medium text-theme-secondary mb-1">Volume (Lots)</label>
             <div className="flex gap-1">
               {['0.01', '0.1', '1', '10'].map(size => (
@@ -853,7 +853,7 @@ const TradingPanel = ({ symbol, currentPrice, onOrderPlaced, balance, onTogglePa
           </div>
 
           {/* Stop Loss & Take Profit */}
-          <div className="px-3 py-2 border-b border-theme-primary">
+          <div className="px-2 py-1.5 lg:px-3 lg:py-2 border-b border-theme-primary">
             <div className="space-y-2">
               <div>
                 <label className="block text-xs font-medium text-theme-secondary mb-1">Stop Loss</label>
@@ -1430,7 +1430,7 @@ export default function TradePage(){
       />
       
       {/* Main content area */}
-      <div className="flex-1 flex overflow-hidden min-h-0 gap-3">
+      <div className="flex-1 flex overflow-hidden min-h-0 gap-2 lg:gap-3">
         {/* Mobile view switching */}
         {isMobile ? (
           mobileView === 'marketWatch' ? (
@@ -1472,9 +1472,9 @@ export default function TradePage(){
         ) : (
           <>
             {/* Desktop layout: Chart left, right sidebar (Market Watch + Trading Panel) */}
-            <div className="flex-1 flex overflow-hidden min-h-0 gap-3">
+            <div className="flex-1 flex overflow-hidden min-h-0 gap-2 lg:gap-3">
               {/* Left: optional navigator + chart */}
-              <div className="flex flex-1 min-w-0 gap-3">
+              <div className="flex flex-1 min-w-0 gap-2 lg:gap-3">
                 {showNavigator && (
                   <div style={{ width: '170px' }} className="animate-section-in">
                     <Navigator />
@@ -1488,11 +1488,11 @@ export default function TradePage(){
 
               {/* Right: Market Watch + Trading Panel */}
               <div
-                className="flex flex-col gap-3 shrink-0 min-h-0"
-                style={{ width: 'clamp(320px, 28vw, 420px)' }}
+                className="flex flex-col gap-2 lg:gap-3 shrink-0"
+                style={{ width: 'clamp(360px, 32vw, 480px)' }}
               >
                 {showMarketWatch && (
-                  <div className="flex-1 min-h-0 animate-section-in">
+                  <div className="animate-section-in">
                     <MarketWatch
                       instruments={instruments}
                       selectedSymbol={symbol}
@@ -1511,11 +1511,6 @@ export default function TradePage(){
                     tabIndex={-1}
                     className="outline-none animate-slide-in-right"
                     data-tour="trading-panel"
-                    style={
-                      panelOpener === 'intent'
-                        ? undefined
-                        : { height: 'clamp(420px, 44vh, 560px)' }
-                    }
                   >
                     <TradingPanel
                       symbol={symbol}
@@ -1524,7 +1519,7 @@ export default function TradePage(){
                       balance={balance}
                       onTogglePanel={toggleTradingPanel}
                       orderSide={selectedOrderSide}
-                      scrollMode={panelOpener === 'intent' ? 'none' : 'auto'}
+                      scrollMode={'none'}
                     />
                   </div>
                 ) : (

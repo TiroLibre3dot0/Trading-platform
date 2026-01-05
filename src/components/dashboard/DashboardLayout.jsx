@@ -55,12 +55,12 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
         </div>
 
         <main className="flex-1 overflow-y-auto transition-all duration-300 relative" style={{minWidth:0}}>
-          <div className="h-full min-h-0 p-3 md:p-6 relative z-0">
+          <div className="h-full min-h-0 p-3 md:p-4 lg:p-6 relative z-0">
             {/* Inline promo banner (non-overlapping) */}
             {!promoDismissed && (
               <div className="max-w-4xl mx-auto mb-3 md:mb-4">
                 <div
-                  className="relative overflow-hidden bg-theme-tertiary text-theme-primary border border-theme-secondary/30 ring-1 ring-blue-500/25 rounded-full px-4 py-2 md:px-5 md:py-2.5 shadow-xl backdrop-blur flex items-center gap-3 min-w-0 cursor-pointer"
+                  className="relative overflow-hidden bg-theme-tertiary text-theme-primary border border-theme-secondary/30 ring-1 ring-blue-500/25 rounded-full px-3 py-1.5 md:px-4 md:py-2 lg:px-5 lg:py-2.5 shadow-xl backdrop-blur flex items-center gap-3 min-w-0 cursor-pointer"
                   role="button"
                   tabIndex={0}
                   onClick={goToDeposits}
@@ -75,7 +75,7 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
                     <span className="absolute inset-0 rounded-full bg-blue-500/15 motion-safe:animate-pulse motion-reduce:animate-none" />
                     <Gift className="relative w-4 h-4 text-blue-400" />
                   </div>
-                  <div className="min-w-0 text-sm md:text-base font-semibold truncate">
+                  <div className="min-w-0 text-sm lg:text-base font-semibold truncate">
                     {promoText}
                   </div>
                   <button
