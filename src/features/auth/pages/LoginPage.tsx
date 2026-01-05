@@ -57,9 +57,7 @@ export default function LoginPage() {
     navigate(fromPath || "/trade");
   };
 
-  const inputBase =
-    "h-10 w-full rounded-xl bg-white px-3 text-[15px] text-navy-900 ring-1 ring-navy-300 placeholder:text-navy-500 focus:outline-none focus:ring-2 focus:ring-brand-600";
-  const inputInvalid = "ring-rose-200 focus:ring-rose-400";
+  const inputInvalid = "tp-login-input-wrap--invalid";
 
   const fieldError = (key: string) => (touched[key] ? errors[key] : "");
 
@@ -90,7 +88,8 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setShowSocial((s) => !s)}
-            className="h-10 w-full rounded-xl bg-white/70 px-3 text-sm font-semibold text-navy-800 ring-1 ring-black/10 transition-colors hover:bg-white"
+            className="tp-login-btn"
+            style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.10)' }}
           >
             Social login
           </button>
@@ -99,81 +98,88 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => socialSignIn("google")}
-                className="h-10 w-10 rounded-full bg-white ring-1 ring-navy-200 hover:bg-navy-50 transition-colors flex items-center justify-center"
+                className="h-10 w-10 rounded-full"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
                 aria-label="Continue with Google"
                 title="Google"
               >
-                <FaGoogle className="h-5 w-5 text-navy-900" aria-hidden="true" />
+                <FaGoogle className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
               </button>
               <button
                 type="button"
                 onClick={() => socialSignIn("apple")}
-                className="h-10 w-10 rounded-full bg-white ring-1 ring-navy-200 hover:bg-navy-50 transition-colors flex items-center justify-center"
+                className="h-10 w-10 rounded-full"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
                 aria-label="Continue with Apple"
                 title="Apple"
               >
-                <FaApple className="h-5 w-5 text-navy-900" aria-hidden="true" />
+                <FaApple className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
               </button>
               <button
                 type="button"
                 onClick={() => socialSignIn("facebook")}
-                className="h-10 w-10 rounded-full bg-white ring-1 ring-navy-200 hover:bg-navy-50 transition-colors flex items-center justify-center"
+                className="h-10 w-10 rounded-full"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
                 aria-label="Continue with Facebook"
                 title="Facebook"
               >
-                <FaFacebookF className="h-5 w-5 text-navy-900" aria-hidden="true" />
+                <FaFacebookF className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
               </button>
             </div>
           ) : null}
         </div>
 
             <div>
-              <label htmlFor="email" className="text-sm font-semibold text-navy-700">
+              <label htmlFor="email" className="tp-login-label">
                 Email
               </label>
-              <input
-                id="email"
-                type="email"
-                inputMode="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => setTouched((p) => ({ ...p, email: true }))}
-                className={cx(inputBase, fieldError("email") && inputInvalid)}
-                autoComplete="email"
-                aria-invalid={!!fieldError("email")}
-                aria-describedby={fieldError("email") ? "email-error" : undefined}
-              />
+              <div className={cx("tp-login-input-wrap", fieldError("email") && inputInvalid)}>
+                <input
+                  id="email"
+                  type="email"
+                  inputMode="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => setTouched((p) => ({ ...p, email: true }))}
+                  className="tp-login-input"
+                  autoComplete="email"
+                  aria-invalid={!!fieldError("email")}
+                  aria-describedby={fieldError("email") ? "email-error" : undefined}
+                />
+              </div>
               {fieldError("email") ? (
-                <div id="email-error" className="mt-1 text-xs font-medium text-rose-600">
+                <div id="email-error" className="tp-login-hint" style={{ color: '#fca5a5' }}>
                   {fieldError("email")}
                 </div>
               ) : null}
             </div>
 
             <div>
-              <label htmlFor="password" className="text-sm font-semibold text-navy-700">
+              <label htmlFor="password" className="tp-login-label">
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={() => setTouched((p) => ({ ...p, password: true }))}
-                className={cx(inputBase, fieldError("password") && inputInvalid)}
-                autoComplete="current-password"
-                aria-invalid={!!fieldError("password")}
-                aria-describedby={fieldError("password") ? "password-error" : undefined}
-              />
+              <div className={cx("tp-login-input-wrap", fieldError("password") && inputInvalid)}>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => setTouched((p) => ({ ...p, password: true }))}
+                  className="tp-login-input"
+                  autoComplete="current-password"
+                  aria-invalid={!!fieldError("password")}
+                  aria-describedby={fieldError("password") ? "password-error" : undefined}
+                />
+              </div>
               {fieldError("password") ? (
-                <div id="password-error" className="mt-1 text-xs font-medium text-rose-600">
+                <div id="password-error" className="tp-login-hint" style={{ color: '#fca5a5' }}>
                   {fieldError("password")}
                 </div>
               ) : null}
             </div>
 
             <div className="flex items-center justify-between gap-3">
-              <label className="inline-flex items-center gap-2 text-sm font-semibold text-navy-700 select-none">
+              <label className="inline-flex items-center gap-2 select-none" style={{ color: 'rgba(159,179,200,0.95)', fontWeight: 700, fontSize: 13 }}>
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -183,30 +189,24 @@ export default function LoginPage() {
                 Keep me signed in
               </label>
 
-              <a href="#" className="text-sm font-semibold text-brand-600 hover:underline">
+              <a href="#" className="tp-login-link" style={{ fontSize: 13 }}>
                 Forgot it?
               </a>
             </div>
 
             {submitError ? (
-              <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 ring-1 ring-rose-100" role="alert">
+              <div className="tp-login-error" role="alert">
                 {submitError}
               </div>
             ) : null}
 
-            <button
-              type="submit"
-              className={cx(
-                "h-11 w-full rounded-xl bg-brand-600 text-[15px] font-semibold text-white ring-1 ring-brand-700/40 transition-colors",
-                "hover:bg-brand-700 active:bg-brand-800"
-              )}
-            >
+            <button type="submit" className="tp-login-btn">
               Continue
             </button>
 
-            <div className="text-center text-sm text-navy-600">
+            <div className="text-center" style={{ color: 'rgba(159,179,200,0.95)', fontSize: 13 }}>
               No account?{" "}
-              <Link to="/signup" className="font-semibold text-brand-600 hover:underline">
+              <Link to="/signup" className="tp-login-link">
                 Sign up
               </Link>
             </div>

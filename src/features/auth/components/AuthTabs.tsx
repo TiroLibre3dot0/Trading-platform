@@ -15,15 +15,15 @@ export default function AuthTabs() {
   const activeKey: "login" | "signup" = location.pathname.startsWith("/signup") ? "signup" : "login";
 
   return (
-    <div className="relative rounded-full bg-white/60 p-1 ring-1 ring-black/5">
+    <div className="tp-auth-tabs">
       <div
         className={cx(
-          "pointer-events-none absolute inset-y-1 w-1/2 rounded-full bg-white ring-1 ring-black/5 transition-transform duration-300",
+          "tp-auth-tabs-slider",
           activeKey === "signup" && "translate-x-full"
         )}
         aria-hidden="true"
       />
-      <div className="relative grid grid-cols-2">
+      <div className="tp-auth-tabs-grid">
         {tabs.map((t) => {
           const active = t.key === activeKey;
           return (
@@ -31,8 +31,8 @@ export default function AuthTabs() {
               key={t.key}
               to={t.to}
               className={cx(
-                "rounded-full px-4 py-2 text-center text-[13px] font-semibold transition-colors",
-                active ? "text-navy-900" : "text-navy-600 hover:text-navy-900"
+                "tp-auth-tab",
+                active && "tp-auth-tab--active"
               )}
               aria-current={active ? "page" : undefined}
             >

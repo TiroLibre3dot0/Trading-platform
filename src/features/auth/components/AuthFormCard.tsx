@@ -13,15 +13,15 @@ export default function AuthFormCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="px-4 py-4 sm:px-5 h-full">
+    <div className="h-full">
       <AuthTabs />
 
       <div className="mt-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="text-base font-semibold text-navy-900">{title}</div>
+          <div className="tp-login-title" style={{ fontSize: 18, margin: 0 }}>{title}</div>
           {headerAction ? <div className="pt-0.5">{headerAction}</div> : null}
         </div>
-        {subtitle ? <div className="mt-0.5 text-[11px] text-navy-600">{subtitle}</div> : null}
+        {subtitle ? <div className="tp-login-subtitle" style={{ marginTop: 6 }}>{subtitle}</div> : null}
       </div>
 
       <div className="mt-3">{children}</div>

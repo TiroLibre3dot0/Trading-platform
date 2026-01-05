@@ -91,6 +91,67 @@
   }
 }
 
+/* Bullwaves_new-style auth shell (fixed, no sliding) */
+.tp-login-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;position:relative;background-size:cover;background-position:center;background-repeat:no-repeat}
+.tp-login-brand{position:absolute;top:18px;left:18px;display:flex;align-items:center;z-index:5}
+.tp-login-brand-img{height:34px;width:auto;display:block;object-fit:contain;cursor:pointer;transition:transform 0.3s ease}
+.tp-login-brand-img:hover{transform:scale(1.05)}
+
+.tp-login-card{width:min(520px,90vw);background:linear-gradient(145deg, rgba(9,15,28,0.92), rgba(7,12,22,0.94));border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,0.45);backdrop-filter:blur(10px);color:#e8f1fb}
+.tp-login-card--wide{width:min(860px,94vw)}
+
+.tp-login-title{font-size:26px;font-weight:800;margin:2px 0 6px 0;color:white}
+.tp-login-subtitle{margin:0 0 16px 0;color:rgba(159,179,200,0.95);font-size:14px;line-height:1.5}
+.tp-login-label{font-size:13px;color:rgba(159,179,200,0.95)}
+.tp-login-hint{font-size:12px;color:rgba(159,179,200,0.95)}
+
+.tp-login-input-wrap{display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:4px 10px;background:rgba(255,255,255,0.02);transition:border-color 120ms ease, box-shadow 120ms ease}
+.tp-login-input-wrap:focus-within{border-color:rgba(34,211,238,0.7);box-shadow:0 10px 30px rgba(34,211,238,0.15)}
+.tp-login-input-wrap--invalid{border-color:rgba(248,113,113,0.55);box-shadow:0 10px 30px rgba(248,113,113,0.12)}
+.tp-login-input{flex:1;padding:10px 2px;border-radius:10px;border:none;background:transparent;color:#e8f1fb;font-size:14px;outline:none}
+
+.tp-login-error{color:#fca5a5;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);padding:8px 10px;border-radius:10px;font-size:13px}
+
+.tp-login-btn{width:100%;margin-top:6px;background:linear-gradient(135deg, #1b4db8, #25d0f2);border:1px solid rgba(34,211,238,0.55);color:white;padding:10px 12px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;transition:transform 0.06s ease, filter 0.12s ease}
+.tp-login-btn:hover{filter:saturate(1.06)}
+.tp-login-btn:active{transform:translateY(1px)}
+
+.tp-login-link{color:#9ae6ff;font-weight:700}
+.tp-login-link:hover{text-decoration:underline}
+
+.tp-auth-tabs{position:relative;border:1px solid rgba(255,255,255,0.10);background:rgba(255,255,255,0.04);padding:4px;border-radius:999px}
+.tp-auth-tabs-slider{pointer-events:none;position:absolute;inset:4px 0 4px 0;width:calc(50% - 4px);border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.10);transition:transform 300ms ease}
+.tp-auth-tabs-grid{position:relative;display:grid;grid-template-columns:1fr 1fr}
+.tp-auth-tab{display:block;text-align:center;border-radius:999px;padding:8px 12px;font-size:13px;font-weight:800;color:rgba(159,179,200,0.95);transition:color 150ms ease}
+.tp-auth-tab:hover{color:white}
+.tp-auth-tab--active{color:white}
+
+/* Scope overrides so existing Tailwind auth form markup matches the dark login style */
+.tp-login-card .text-navy-900,
+.tp-login-card .text-navy-800,
+.tp-login-card .text-navy-700{color:#ffffff !important}
+.tp-login-card .text-navy-600,
+.tp-login-card .text-navy-500,
+.tp-login-card .text-slate-600,
+.tp-login-card .text-slate-500{color:rgba(159,179,200,0.95) !important}
+
+.tp-login-card input,
+.tp-login-card select,
+.tp-login-card textarea{color:#e8f1fb !important;background:transparent !important;border-color:rgba(255,255,255,0.10) !important}
+.tp-login-card input::placeholder,
+.tp-login-card textarea::placeholder{color:rgba(159,179,200,0.75) !important}
+
+.tp-login-card .bg-white,
+.tp-login-card .bg-white\/80,
+.tp-login-card .bg-white\/70,
+.tp-login-card .bg-white\/60,
+.tp-login-card .bg-white\/50{background:rgba(255,255,255,0.04) !important}
+
+.tp-login-card .ring-black\/5,
+.tp-login-card .ring-black\/10{box-shadow:none !important}
+
+
+
 @keyframes authTickerScroll {
   0% { transform: translateY(0px); }
   100% { transform: translateY(-48px); }
