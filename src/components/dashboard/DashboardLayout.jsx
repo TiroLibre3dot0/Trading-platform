@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Gift, X } from 'lucide-react';
 import TopNavbar from '../layout/TopNavbar';
 import PrimarySidebar from '../layout/PrimarySidebar';
@@ -8,6 +8,7 @@ import SecondarySidebar from '../layout/SecondarySidebar';
 // DashboardLayout handles the fixed viewport layout: sticky navbar, left sidebars and main area.
 export default function DashboardLayout({ children, menuCollapsed, setMenuCollapsed, secondaryOpen, setSecondaryOpen, primarySelection, setPrimarySelection, secondarySelection, setSecondarySelection, selectedAccount, setSelectedAccount, onSettings, onMenuToggle }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const NAVBAR_H = 72;
   const BANNER_H = 0;
@@ -28,10 +29,17 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
   };
 
   const handleMenuToggle = () => {
-    if (typeof onMenuToggle === 'function') return onMenuToggle();
+    // Toggle the sidebars without forcing navigation.
+    // - If secondary is open: close it (keep primary state).
+    // - Else: toggle primary between expanded and collapsed.
+    if (secondaryOpen) {
+      setSecondaryOpen(false);
+      return;
+    }
     setMenuCollapsed(v => !v);
-    setSecondaryOpen(v => !v);
   };
+
+  const showPromoBanner = location?.pathname?.startsWith('/trade');
 
   const goToDeposits = () => {
     try {
@@ -51,13 +59,13 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
       >
         <div className="md:flex hidden" style={{minWidth:0}}>
           <PrimarySidebar collapsed={menuCollapsed || secondaryOpen} active={primarySelection} onSelect={setPrimarySelection} onToggleMenu={handleMenuToggle} secondaryOpen={secondaryOpen} />
-          <SecondarySidebar open={secondaryOpen} onClose={() => { setSecondaryOpen(false); setMenuCollapsed(false); }} active={secondarySelection} onSelect={setSecondarySelection} />
+          <SecondarySidebar open={secondaryOpen} onClose={() => setSecondaryOpen(false)} active={secondarySelection} onSelect={setSecondarySelection} />
         </div>
 
         <main className="flex-1 overflow-y-auto transition-all duration-300 relative" style={{minWidth:0}}>
           <div className="h-full min-h-0 p-3 md:p-4 lg:p-6 relative z-0">
             {/* Inline promo banner (non-overlapping) */}
-            {!promoDismissed && (
+            {showPromoBanner && !promoDismissed && (
               <div className="max-w-4xl mx-auto mb-3 md:mb-4">
                 <div
                   className="relative overflow-hidden bg-theme-tertiary text-theme-primary border border-theme-secondary/30 ring-1 ring-blue-500/25 rounded-full px-3 py-1.5 md:px-4 md:py-2 lg:px-5 lg:py-2.5 shadow-xl backdrop-blur flex items-center gap-3 min-w-0 cursor-pointer"

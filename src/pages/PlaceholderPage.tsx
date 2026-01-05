@@ -263,15 +263,15 @@ export default function PlaceholderPage({ title }:{title?:string}){
     );
 
     return (
-      <div className="h-full min-w-0 p-4">
-        <Header title="Menu" subtitle="Profile overview" Icon={User} />
+      <div className="h-full min-w-0 p-3 md:p-4">
+        <Header title="Menu" subtitle="Profile" Icon={User} />
 
         <div className="bg-slate-900 border border-slate-800 rounded-lg p-4">
           <div className="max-w-5xl mx-auto">
               <div className="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 mb-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="text-lg font-semibold">Benvenuto{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</div>
+                    <div className="text-base md:text-lg font-semibold">Benvenuto{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</div>
                     <div className="text-xs text-slate-400 mt-1">Se è la tua prima volta, ecco il percorso più semplice per partire.</div>
                   </div>
                   <div className="hidden sm:block">
@@ -299,7 +299,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
                         onClick={() => go('/trade')}
                       />
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-3">Tip: puoi completare la verifica KYC dal menu laterale (Profile/Verification) quando ti è comodo.</div>
+                    <div className="text-[11px] text-slate-400 mt-3">Tip: completa la verifica KYC dal menu laterale quando ti è comodo.</div>
                   </div>
 
                   <SupportCard />
@@ -308,11 +308,11 @@ export default function PlaceholderPage({ title }:{title?:string}){
 
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 rounded-full bg-slate-800 border border-slate-700/70 flex items-center justify-center text-lg font-semibold text-slate-100">
+                  <div className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-slate-800 border border-slate-700/70 flex items-center justify-center text-base md:text-lg font-semibold text-slate-100">
                     {initials}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-lg font-semibold truncate">{user?.name}</div>
+                    <div className="text-base md:text-lg font-semibold truncate">{user?.name}</div>
                     <div className="text-xs text-slate-400 truncate">{user?.email}</div>
                     <div className="text-xs text-slate-400 mt-1">Status: <span className="text-slate-200 font-medium">{user?.status}</span></div>
                   </div>
@@ -910,8 +910,8 @@ export default function PlaceholderPage({ title }:{title?:string}){
     );
 
     return (
-      <div className="h-full min-w-0 p-4">
-        <Header title="Funds" subtitle="Manage your funds, deposits, withdrawals, and transaction history" Icon={Wallet} />
+      <div className="h-full min-w-0 p-3 md:p-4">
+        <Header title="Funds" subtitle="Deposits, withdrawals, history" Icon={Wallet} />
         <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 flex flex-col">
           <SectionTabs
             value={tab}
@@ -927,7 +927,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
           {tab === 'overview' && (
             <div className="max-w-5xl mx-auto">
                 <div className="text-center mt-1 mb-4">
-                  <div className="text-lg font-semibold">Funds management</div>
+                  <div className="text-base md:text-lg font-semibold">Funds management</div>
                   <div className="text-xs text-slate-400 mt-1">Deposit, withdraw, and keep track of your account balances.</div>
                 </div>
 
@@ -944,13 +944,13 @@ export default function PlaceholderPage({ title }:{title?:string}){
                 <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
                   <button
                     onClick={() => openDeposit('Bank Transfer')}
-                    className="min-w-[220px] px-8 py-3 rounded-full bg-blue-600 hover:bg-blue-500 transition-colors text-white font-medium"
+                    className="min-w-[200px] px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 transition-colors text-white font-medium text-sm"
                   >
                     Deposit
                   </button>
                   <button
                     onClick={() => openWithdraw('Bank')}
-                    className="min-w-[220px] px-8 py-3 rounded-full bg-slate-800 hover:bg-slate-700/70 transition-colors text-slate-100 font-medium border border-slate-700/70"
+                    className="min-w-[200px] px-6 py-2.5 rounded-full bg-slate-800 hover:bg-slate-700/70 transition-colors text-slate-100 font-medium border border-slate-700/70 text-sm"
                   >
                     Withdraw
                   </button>
