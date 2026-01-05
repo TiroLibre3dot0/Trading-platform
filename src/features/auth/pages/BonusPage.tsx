@@ -7,7 +7,7 @@ export default function BonusPage() {
     <AuthFormCard title="Welcome bonus" subtitle="Enable a 100% deposit bonus on your account.">
       <div className="space-y-4">
         <div className="pt-1">
-          <img src="/Logo.png" alt="Bullwaves" className="mx-auto h-8 w-auto opacity-90" />
+          <img src="/Logo.png" alt="Bullwaves" className="mx-auto h-10 w-auto opacity-90" />
         </div>
 
         <div
