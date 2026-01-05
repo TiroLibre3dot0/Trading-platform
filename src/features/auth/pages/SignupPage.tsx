@@ -146,6 +146,41 @@ export default function SignupPage() {
     setSubmitError(`Social login (${provider}) isn't wired yet.`);
   };
 
+  const SocialButtons = () => (
+    <div className="flex items-center justify-center gap-3">
+      <button
+        type="button"
+        onClick={() => socialSignIn("google")}
+        className="grid h-10 w-10 place-items-center rounded-full"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)" }}
+        aria-label="Continue with Google"
+        title="Google"
+      >
+        <FaGoogle className="h-5 w-5" style={{ color: "#e8f1fb" }} aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        onClick={() => socialSignIn("apple")}
+        className="grid h-10 w-10 place-items-center rounded-full"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)" }}
+        aria-label="Continue with Apple"
+        title="Apple"
+      >
+        <FaApple className="h-5 w-5" style={{ color: "#e8f1fb" }} aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        onClick={() => socialSignIn("facebook")}
+        className="grid h-10 w-10 place-items-center rounded-full"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)" }}
+        aria-label="Continue with Facebook"
+        title="Facebook"
+      >
+        <FaFacebookF className="h-5 w-5" style={{ color: "#e8f1fb" }} aria-hidden="true" />
+      </button>
+    </div>
+  );
+
   const Stepper = () => (
     <div className="mb-2 flex items-center justify-center gap-2" aria-label="Signup steps">
       <div className={cx("h-2.5 w-2.5 rounded-full", step === 1 ? "bg-brand-600" : "bg-black/20")} aria-hidden="true" />
@@ -170,39 +205,6 @@ export default function SignupPage() {
       }
     >
       <form onSubmit={onSubmit} className="space-y-2" noValidate>
-        <div className="flex items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => socialSignIn("google")}
-            className="h-10 w-10 rounded-full"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-            aria-label="Continue with Google"
-            title="Google"
-          >
-            <FaGoogle className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={() => socialSignIn("apple")}
-            className="h-10 w-10 rounded-full"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-            aria-label="Continue with Apple"
-            title="Apple"
-          >
-            <FaApple className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={() => socialSignIn("facebook")}
-            className="h-10 w-10 rounded-full"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-            aria-label="Continue with Facebook"
-            title="Facebook"
-          >
-            <FaFacebookF className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-          </button>
-        </div>
-
         <Stepper />
 
         {step === 1 ? (
@@ -446,6 +448,8 @@ export default function SignupPage() {
           Continue
         </button>
 
+        <SocialButtons />
+
         <div className="text-center text-[13px] text-navy-600">
           Already registered?{" "}
           <Link to="/login" className="font-semibold text-brand-600 hover:underline">
@@ -627,6 +631,8 @@ export default function SignupPage() {
                 Create account
               </button>
             </div>
+
+            <SocialButtons />
 
             <div className="text-center text-[13px] text-navy-600">
               Already registered?{" "}

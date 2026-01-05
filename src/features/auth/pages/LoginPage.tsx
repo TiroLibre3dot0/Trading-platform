@@ -65,6 +65,41 @@ export default function LoginPage() {
     setSubmitError(`Social login (${provider}) isn't wired yet.`);
   };
 
+  const SocialButtons = () => (
+    <div className="flex items-center justify-center gap-3">
+      <button
+        type="button"
+        onClick={() => socialSignIn("google")}
+        className="grid h-10 w-10 place-items-center rounded-full"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)" }}
+        aria-label="Continue with Google"
+        title="Google"
+      >
+        <FaGoogle className="h-5 w-5" style={{ color: "#e8f1fb" }} aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        onClick={() => socialSignIn("apple")}
+        className="grid h-10 w-10 place-items-center rounded-full"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)" }}
+        aria-label="Continue with Apple"
+        title="Apple"
+      >
+        <FaApple className="h-5 w-5" style={{ color: "#e8f1fb" }} aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        onClick={() => socialSignIn("facebook")}
+        className="grid h-10 w-10 place-items-center rounded-full"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.10)" }}
+        aria-label="Continue with Facebook"
+        title="Facebook"
+      >
+        <FaFacebookF className="h-5 w-5" style={{ color: "#e8f1fb" }} aria-hidden="true" />
+      </button>
+    </div>
+  );
+
   return (
     <AuthFormCard
       title="Welcome back"
@@ -82,39 +117,6 @@ export default function LoginPage() {
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
-        <div className="flex items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => socialSignIn("google")}
-            className="h-10 w-10 rounded-full"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-            aria-label="Continue with Google"
-            title="Google"
-          >
-            <FaGoogle className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={() => socialSignIn("apple")}
-            className="h-10 w-10 rounded-full"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-            aria-label="Continue with Apple"
-            title="Apple"
-          >
-            <FaApple className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={() => socialSignIn("facebook")}
-            className="h-10 w-10 rounded-full"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}
-            aria-label="Continue with Facebook"
-            title="Facebook"
-          >
-            <FaFacebookF className="h-5 w-5" style={{ color: '#e8f1fb' }} aria-hidden="true" />
-          </button>
-        </div>
-
             <div>
               <label htmlFor="email" className="tp-login-label">
                 Email
@@ -189,6 +191,8 @@ export default function LoginPage() {
             <button type="submit" className="tp-login-btn">
               Continue
             </button>
+
+            <SocialButtons />
 
             <div className="text-center" style={{ color: 'rgba(159,179,200,0.95)', fontSize: 13 }}>
               No account?{" "}
