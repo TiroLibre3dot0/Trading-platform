@@ -7,19 +7,25 @@ export default function BonusPage() {
     <AuthFormCard title="Welcome bonus" subtitle="Enable a 100% deposit bonus on your account.">
       <div className="space-y-4">
         <div className="pt-1">
-          <img src="/Logo.png" alt="Bullwaves" className="mx-auto h-10 w-auto opacity-95" />
+          <img src="/Logo.png" alt="Bullwaves" className="mx-auto h-8 w-auto opacity-90" />
         </div>
 
-        <div className="text-center">
-          <div className="text-[11px] font-extrabold uppercase tracking-wide text-navy-600">Account feature</div>
-          <div className="mt-1 text-2xl font-extrabold leading-tight text-white">100% deposit bonus</div>
-          <div className="mt-2 text-[13px] text-navy-600">Available after signup. Applies to your first deposit.</div>
-        </div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+          <div className="text-center">
+            <div className="text-[11px] font-extrabold uppercase tracking-wide text-navy-600">Account feature</div>
 
-        <div className="text-center text-[13px] font-semibold text-navy-600">Included with your Bullwaves account.</div>
+            <div className="mt-1 text-[32px] font-extrabold leading-[1.05] text-white">100% Deposit Bonus</div>
+
+            <div className="mt-3 space-y-1 text-[13px] text-navy-600">
+              <div>Applies to your first deposit only.</div>
+              <div>Optional — you can continue without it.</div>
+              <div>Included with your Bullwaves account.</div>
+            </div>
+          </div>
+        </div>
 
         <Link to="/signup" className="tp-login-btn block text-center">
-          Create account
+          Activate bonus & create account
         </Link>
 
         <div className="text-center" style={{ color: "rgba(159,179,200,0.95)", fontSize: 13 }}>
