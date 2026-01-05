@@ -127,9 +127,9 @@ export default function PlaceholderPage({ title }:{title?:string}){
     const list = useMemo(()=> mock.markets.filter(m => cat==='all' ? true : m.category===cat), [cat]);
 
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Markets" subtitle="Discover instruments and trade with price transparency" Icon={BarChart2} />
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-[calc(100%-64px)] flex gap-3">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-[calc(100%-64px)] flex gap-3 overflow-auto">
           <div className="w-2/3 overflow-auto" style={{minHeight:0}}>
             <div className="flex gap-2 mb-3">
               {categories.map(c=> (
@@ -263,10 +263,10 @@ export default function PlaceholderPage({ title }:{title?:string}){
     );
 
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Menu" subtitle="Profile overview" Icon={User} />
 
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] overflow-hidden flex flex-col">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] overflow-auto flex flex-col">
           <div className="flex-1 overflow-auto" style={{ minHeight: 0 }}>
             <div className="max-w-5xl mx-auto">
               <div className="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 mb-4">
@@ -429,10 +429,10 @@ export default function PlaceholderPage({ title }:{title?:string}){
     );
 
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Account settings" subtitle="Create a new trading account for MetaTrader" Icon={User} />
 
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] overflow-hidden flex flex-col">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] overflow-auto flex flex-col">
           <div className="flex-1 overflow-auto" style={{ minHeight: 0 }}>
             <div className="max-w-5xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -593,9 +593,9 @@ export default function PlaceholderPage({ title }:{title?:string}){
   // Open Positions
   const OpenPositionsView = () => {
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Open Positions" subtitle="Monitor and manage your active market exposure in real time" Icon={TrendingUp} />
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-[calc(100%-64px)] overflow-hidden flex flex-col">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-[calc(100%-64px)] overflow-auto flex flex-col">
           <div className="overflow-auto" style={{minHeight:0}}>
             <table className="w-full text-sm">
               <thead>
@@ -643,7 +643,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
     const worst = Math.min(...closed.map(c=>c.amount));
 
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Closed Positions" subtitle="Review completed trades, performance and summaries" Icon={TrendingUp} />
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div className="bg-slate-900 border border-slate-800 rounded p-3">
@@ -721,10 +721,10 @@ export default function PlaceholderPage({ title }:{title?:string}){
     const avg = Math.round((closed.reduce((s,c)=>s+c.amount,0))/Math.max(1,closed.length));
 
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Positions" subtitle="Open and closed positions" Icon={TrendingUp} />
 
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] flex flex-col">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] flex flex-col overflow-auto">
           <SectionTabs
             value={tab}
             onChange={(v) => setTab(v as any)}
@@ -911,9 +911,9 @@ export default function PlaceholderPage({ title }:{title?:string}){
     );
 
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Funds" subtitle="Manage your funds, deposits, withdrawals, and transaction history" Icon={Wallet} />
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] flex flex-col">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 h-[calc(100%-64px)] flex flex-col overflow-auto">
           <SectionTabs
             value={tab}
             onChange={setTab}
@@ -1380,7 +1380,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
     const [notes, setNotes] = useState('');
 
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Withdrawals" subtitle="Request fund withdrawal" Icon={Wallet} />
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2 bg-slate-900 border border-slate-800 rounded p-4">
@@ -1423,9 +1423,9 @@ export default function PlaceholderPage({ title }:{title?:string}){
   const TransactionsView = () => {
     const [selected, setSelected] = useState<any|null>(null);
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Transactions" subtitle="Account activity and detailed ledger" Icon={List} />
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-[calc(100%-64px)] flex">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 h-[calc(100%-64px)] flex overflow-auto">
           <div className="w-full overflow-auto" style={{minHeight:0}}>
             <table className="w-full text-sm">
               <thead>
@@ -1469,7 +1469,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
     const [openForm, setOpenForm] = useState(false);
 
     return (
-      <div className="h-full min-w-0 overflow-hidden p-4">
+      <div className="h-full min-w-0 overflow-auto p-4">
         <Header title="Support" subtitle="Open tickets and customer help resources" Icon={Activity} />
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2 bg-slate-900 border border-slate-800 rounded p-3">
@@ -1542,7 +1542,7 @@ export default function PlaceholderPage({ title }:{title?:string}){
     case 'profile': return <ProfileView />;
     default:
       return (
-        <div className="h-full min-w-0 overflow-hidden p-4">
+        <div className="h-full min-w-0 overflow-auto p-4">
           <Header title={title || 'Page'} />
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 h-full">
             <div className="text-slate-300">Content implemented for this route.</div>
@@ -1568,7 +1568,7 @@ function ProfileView(){
   const fmtMoney = (v: any) => typeof v === 'number' ? `$${v.toLocaleString()}` : v;
 
   return (
-    <div className="h-full min-w-0 overflow-hidden p-4">
+    <div className="h-full min-w-0 overflow-auto p-4">
       <Header title="Account" subtitle="Manage your profile, documents, security and preferences" Icon={User} />
 
       <div className="grid grid-cols-3 gap-4">

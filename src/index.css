@@ -92,12 +92,12 @@
 }
 
 /* Bullwaves_new-style auth shell (fixed, no sliding) */
-.tp-login-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;position:relative;background-size:cover;background-position:center;background-repeat:no-repeat}
+.tp-login-shell{min-height:100svh;display:flex;align-items:center;justify-content:center;padding:30px;position:relative;background-size:cover;background-position:center;background-repeat:no-repeat;overflow:auto}
 .tp-login-brand{position:absolute;top:18px;left:18px;display:flex;align-items:center;z-index:5}
 .tp-login-brand-img{height:34px;width:auto;display:block;object-fit:contain;cursor:pointer;transition:transform 0.3s ease}
 .tp-login-brand-img:hover{transform:scale(1.05)}
 
-.tp-login-card{width:min(520px,90vw);background:linear-gradient(145deg, rgba(9,15,28,0.92), rgba(7,12,22,0.94));border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,0.45);backdrop-filter:blur(10px);color:#e8f1fb}
+.tp-login-card{width:min(520px,90vw);background:linear-gradient(145deg, rgba(9,15,28,0.92), rgba(7,12,22,0.94));border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,0.45);backdrop-filter:blur(10px);color:#e8f1fb;max-height:calc(100svh - 140px);overflow:auto}
 .tp-login-card--wide{width:min(860px,94vw)}
 
 .tp-login-title{font-size:26px;font-weight:800;margin:2px 0 6px 0;color:white}
@@ -118,6 +118,24 @@
 
 .tp-login-link{color:#9ae6ff;font-weight:700}
 .tp-login-link:hover{text-decoration:underline}
+
+@media (max-width: 1024px) {
+  .tp-login-shell{padding:20px}
+}
+
+@media (max-width: 640px) {
+  .tp-login-shell{padding:16px}
+  .tp-login-brand{top:14px;left:14px}
+  .tp-login-brand-img{height:30px}
+  .tp-login-card{width:min(520px,94vw);padding:18px;border-radius:16px;max-height:calc(100svh - 120px)}
+  .tp-login-title{font-size:22px}
+  .tp-login-subtitle{font-size:13px}
+}
+
+@media (max-height: 740px) {
+  .tp-login-shell{align-items:flex-start;padding-top:76px}
+  .tp-login-card{max-height:calc(100svh - 110px)}
+}
 
 .tp-auth-tabs{position:relative;border:1px solid rgba(255,255,255,0.10);background:rgba(255,255,255,0.04);padding:4px;border-radius:999px}
 .tp-auth-tabs-slider{pointer-events:none;position:absolute;inset:4px 0 4px 0;width:calc(50% - 4px);border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.10);transition:transform 300ms ease}
@@ -502,6 +520,19 @@ button, input, select {
   .mobile-gap-2 {
     gap: 0.5rem;
   }
+}
+
+/* Small-screen safety: avoid horizontal overflow from dense tables / wide controls */
+@media (max-width: 1024px) {
+  html, body { overflow-x: hidden; }
+
+  /* Allow horizontal scroll for dense tables without breaking layouts */
+  table.w-full { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+@media (max-width: 640px) {
+  /* Prevent fixed Tailwind min-width buttons from forcing horizontal scroll */
+  [class*="min-w-[220px]"] { min-width: 0 !important; width: 100% !important; }
 }
 
 @media (max-width: 640px) {

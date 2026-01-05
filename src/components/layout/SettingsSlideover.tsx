@@ -6,7 +6,7 @@ export default function SettingsSlideover({ open, onClose }:{open:boolean,onClos
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1" onClick={onClose} />
-      <aside className="w-96 bg-slate-900 border-l border-slate-800 p-4 overflow-auto">
+      <aside className="w-full max-w-[24rem] bg-slate-900 border-l border-slate-800 p-4 overflow-auto">
         <div className="flex items-center justify-between mb-4">
           <div className="text-lg font-semibold">Settings</div>
           <button onClick={onClose} className="text-slate-400">Close</button>

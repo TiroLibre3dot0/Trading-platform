@@ -251,7 +251,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
   const unreadCount = mockNotifications.filter(n => !n.read).length;
   return (
     <header
-      className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary shadow-sm flex items-center px-4 md:px-8 relative z-40"
+      className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary shadow-sm flex items-center px-3 md:px-6 xl:px-8 relative z-40"
     >
       {/* Left section - Logo and Mobile Controls */}
       <div className="flex items-center gap-2 md:gap-6">
@@ -328,7 +328,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
       </div>
 
       {/* Center section - Financial Metrics */}
-      <div className="flex-1 md:flex justify-center hidden">
+      <div className="flex-1 2xl:flex justify-center hidden">
         <div className="flex items-center gap-16">
         {/* Toggle Numbers Visibility */}
         <button
