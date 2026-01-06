@@ -166,7 +166,9 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                       } catch (_err) {
                         // ignore
                       }
-                      if (typeof onQuickTrade === 'function') {
+                      if (isMobile) {
+                        onOpenTradingPanel?.();
+                      } else if (typeof onQuickTrade === 'function') {
                         onQuickTrade(inst.symbol, 'sell');
                       } else {
                         onOpenTradingPanel?.();
@@ -192,7 +194,9 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
                       } catch (_err) {
                         // ignore
                       }
-                      if (typeof onQuickTrade === 'function') {
+                      if (isMobile) {
+                        onOpenTradingPanel?.();
+                      } else if (typeof onQuickTrade === 'function') {
                         onQuickTrade(inst.symbol, 'buy');
                       } else {
                         onOpenTradingPanel?.();
