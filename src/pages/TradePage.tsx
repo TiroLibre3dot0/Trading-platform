@@ -121,7 +121,7 @@ const Toolbar = ({ symbol, timeframe, onTimeframeChange, onIndicatorAdd, onMarke
 
 const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradingPanel, onSetOrderSide, onQuickTrade, isMobile, dock = 'left' }: any) => (
   <div
-    className={`bg-theme-secondary ${dock === 'right' ? 'border-l' : 'border-r'} border-theme-primary flex flex-col h-full`}
+    className={`bg-theme-secondary ${dock === 'right' ? 'border-l' : 'border-r'} border-theme-primary flex flex-col h-full min-h-0`}
     data-tour="market-watch"
   >
     <div className="px-2 py-1 border-b border-theme-primary flex items-center justify-between">
@@ -135,7 +135,7 @@ const MarketWatch = ({ instruments, selectedSymbol, onSymbolSelect, onOpenTradin
         </button>
       )}
     </div>
-    <div className={isMobile ? 'flex-1 overflow-auto scrollbar-invisible' : 'flex-1'}>
+    <div className="flex-1 min-h-0 overflow-auto scrollbar-invisible">
       <table className="w-full text-xs leading-tight">
         <thead className="bg-theme-tertiary">
           <tr>
@@ -1496,11 +1496,11 @@ export default function TradePage(){
 
               {/* Right: Market Watch + Trading Panel */}
               <div
-                className="flex flex-col gap-2 lg:gap-3 shrink-0"
+                className="flex flex-col gap-2 lg:gap-3 shrink-0 min-h-0 overflow-hidden"
                 style={{ width: 'clamp(360px, 32vw, 480px)' }}
               >
                 {showMarketWatch && (
-                  <div className="animate-section-in">
+                  <div className="animate-section-in flex-1 min-h-0 overflow-hidden">
                     <MarketWatch
                       instruments={instruments}
                       selectedSymbol={symbol}
@@ -1517,7 +1517,7 @@ export default function TradePage(){
                   <div
                     ref={tradingPanelFocusRef}
                     tabIndex={-1}
-                    className="outline-none animate-slide-in-right"
+                    className="outline-none animate-slide-in-right flex-1 min-h-0 overflow-hidden"
                     data-tour="trading-panel"
                   >
                     <TradingPanel
@@ -1527,7 +1527,7 @@ export default function TradePage(){
                       balance={balance}
                       onTogglePanel={toggleTradingPanel}
                       orderSide={selectedOrderSide}
-                      scrollMode={'none'}
+                      scrollMode={'auto'}
                     />
                   </div>
                 ) : (
