@@ -17,6 +17,9 @@ out/
 .env.production.local
 .env.*
 
+# Allow committing an example env file
+!.env.example
+
 # Vercel
 .vercel/
 
@@ -33,6 +36,10 @@ pids
 # Coverage directory used by tools like istanbul
 coverage/
 *.lcov
+
+# Playwright
+test-results/
+playwright-report/
 
 # nyc test coverage
 .nyc_output
