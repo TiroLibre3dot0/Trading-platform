@@ -1441,7 +1441,6 @@ export default function TradePage(){
                 onSymbolSelect={handleSymbolChange}
                 onOpenTradingPanel={() => setMobileView('trading')}
                 onSetOrderSide={setOrderSide}
-                onQuickTrade={openQuickTrade}
                 isMobile={isMobile}
               />
             </div>
