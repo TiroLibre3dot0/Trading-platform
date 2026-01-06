@@ -40,8 +40,8 @@ const formatBonus = (value) => {
   return bonusMoney.format(num);
 };
 
-// Mock notifications data
-const mockNotifications = [
+// Initial notifications (used as seed for the simulator)
+const initialNotifications = [
   {
     id: 1,
     type: 'success',
@@ -78,6 +78,33 @@ const mockNotifications = [
     timestamp: '2 hours ago',
     read: true
   }
+];
+
+const notificationTemplates = [
+  {
+    type: 'success',
+    icon: CheckCircle,
+    title: 'Trade Executed',
+    message: 'Order executed successfully.',
+  },
+  {
+    type: 'warning',
+    icon: AlertTriangle,
+    title: 'Margin Warning',
+    message: 'Your margin level is getting low.',
+  },
+  {
+    type: 'info',
+    icon: TrendingUp,
+    title: 'Market Update',
+    message: 'Volatility increased on major FX pairs.',
+  },
+  {
+    type: 'success',
+    icon: Shield,
+    title: 'Security',
+    message: 'New login detected. If this wasn\'t you, contact support.',
+  },
 ];
 
 // Mock economic data
@@ -166,13 +193,49 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
   const [mobileSheet, setMobileSheet] = useState(null);
   const [hideNumbers, setHideNumbers] = useState(false);
   const [showEconomicData, setShowEconomicData] = useState(false);
+  const [notifications, setNotifications] = useState(initialNotifications);
+  const nextNotificationIdRef = useRef(
+    Math.max(0, ...initialNotifications.map(n => Number(n.id) || 0)) + 1
+  );
   const notificationsRef = useRef(null);
   const accountDropdownRef = useRef(null);
+
+  const markAllNotificationsRead = () => {
+    setNotifications(prev => prev.map(n => (n.read ? n : { ...n, read: true })));
+  };
+
+  // Soft simulator: every 5 minutes append a new unread notification.
+  // No toast/popups: user must open the notifications panel to read.
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const template = notificationTemplates[Math.floor(Math.random() * notificationTemplates.length)];
+      setNotifications(prev => {
+        const next = [
+          {
+            id: nextNotificationIdRef.current++,
+            type: template.type,
+            icon: template.icon,
+            title: template.title,
+            message: template.message,
+            timestamp: 'Just now',
+            read: false,
+          },
+          ...prev,
+        ];
+        return next.slice(0, 20);
+      });
+    }, 5 * 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const openMobileSheet = (sheet) => {
     setShowNotifications(false);
     setShowAccountDropdown(false);
     setShowEconomicData(false);
+    if (sheet === 'notifications') {
+      markAllNotificationsRead();
+    }
     setMobileSheet(sheet);
   };
 
@@ -248,7 +311,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
     };
   }, [showNotifications, showAccountDropdown]);
 
-  const unreadCount = mockNotifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter(n => !n.read).length;
   return (
     <header
       className="h-[72px] w-full bg-theme-primary/95 backdrop-blur-sm border-b border-theme-secondary shadow-sm flex items-center px-3 md:px-6 xl:px-8 relative z-40"
@@ -446,7 +509,15 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
         </div>
 
         <button
-          onClick={() => setShowNotifications(!showNotifications)}
+          onClick={() => {
+            setShowNotifications(prev => {
+              const next = !prev;
+              if (next) {
+                markAllNotificationsRead();
+              }
+              return next;
+            });
+          }}
           aria-label="Notifications"
           className="p-2.5 rounded-lg bg-theme-secondary/50 hover:bg-theme-secondary hover:shadow-sm transition-all duration-200 relative group"
         >
@@ -471,7 +542,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
               <p className="text-xs text-theme-secondary mt-1">You have {unreadCount} unread notifications</p>
             </div>
             <div className="divide-y divide-theme-secondary/20">
-              {mockNotifications.map(notification => {
+              {notifications.map(notification => {
                 const IconComponent = notification.icon;
                 return (
                   <div key={notification.id} className={`p-4 hover:bg-theme-tertiary/50 transition-all duration-200 cursor-pointer ${!notification.read ? 'bg-blue-600/5 border-l-2 border-blue-500/50' : ''}`}>
@@ -642,7 +713,7 @@ export default function TopNavbar({ selectedAccountId, onAccountChange, onMenuTo
 
             <div className="flex-1 overflow-y-auto">
               <div className="divide-y divide-theme-secondary/20">
-                {mockNotifications.map(notification => {
+                {notifications.map(notification => {
                   const IconComponent = notification.icon;
                   return (
                     <div

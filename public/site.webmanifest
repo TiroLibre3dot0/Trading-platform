@@ -8,11 +8,6 @@
     "theme_color": "#1e40af",
     "icons": [
         {
-            "src": "/Logo.png",
-            "sizes": "any",
-            "type": "image/png"
-        },
-        {
             "src": "/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
@@ -22,6 +17,21 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "/favicon-32x32.svg",
+            "sizes": "32x32",
+            "type": "image/svg+xml"
+        },
+        {
+            "src": "/favicon-16x16.svg",
+            "sizes": "16x16",
+            "type": "image/svg+xml"
         }
     ]
 }

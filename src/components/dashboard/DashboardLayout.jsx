@@ -39,7 +39,8 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
     setMenuCollapsed(v => !v);
   };
 
-  const showPromoBanner = location?.pathname?.startsWith('/trade');
+  const isTradeRoute = location?.pathname?.startsWith('/trade');
+  const showPromoBanner = isTradeRoute;
 
   const goToDeposits = () => {
     try {
@@ -62,8 +63,11 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
           <SecondarySidebar open={secondaryOpen} onClose={() => setSecondaryOpen(false)} active={secondarySelection} onSelect={setSecondarySelection} />
         </div>
 
-        <main className="flex-1 overflow-y-auto transition-all duration-300 relative" style={{minWidth:0}}>
-          <div className="h-full min-h-0 p-3 md:p-4 lg:p-6 relative z-0">
+        <main
+          className={`flex-1 transition-all duration-300 relative ${isTradeRoute ? 'overflow-hidden' : 'overflow-y-auto'}`}
+          style={{ minWidth: 0 }}
+        >
+          <div className={`h-full min-h-0 p-3 md:p-4 lg:p-6 relative z-0 ${isTradeRoute ? 'flex flex-col' : ''}`}>
             {/* Inline promo banner (non-overlapping) */}
             {showPromoBanner && !promoDismissed && (
               <div className="max-w-4xl mx-auto mb-3 md:mb-4">
@@ -98,7 +102,13 @@ export default function DashboardLayout({ children, menuCollapsed, setMenuCollap
                 </div>
               </div>
             )}
-            {children}
+            {isTradeRoute ? (
+              <div className="flex-1 min-h-0 overflow-hidden">
+                {children}
+              </div>
+            ) : (
+              children
+            )}
           </div>
           {/* Overlay for secondary sidebar */}
           {secondaryOpen && (

@@ -1457,16 +1457,21 @@ export default function TradePage(){
               />
             </div>
           ) : (
-            <div className="flex-1">
-              <TradingPanel 
-                symbol={symbol} 
-                currentPrice={currentPrice} 
-                onOrderPlaced={handleOrderPlaced}
-                balance={balance}
-                onTogglePanel={() => setMobileView('marketWatch')}
-                orderSide={selectedOrderSide}
-                isMobile={isMobile}
-              />
+            <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-hidden">
+              <div className="h-48 shrink-0 overflow-hidden rounded">
+                <MTChart symbol={symbol} timeframe={timeframe} />
+              </div>
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <TradingPanel 
+                  symbol={symbol} 
+                  currentPrice={currentPrice} 
+                  onOrderPlaced={handleOrderPlaced}
+                  balance={balance}
+                  onTogglePanel={() => setMobileView('marketWatch')}
+                  orderSide={selectedOrderSide}
+                  isMobile={isMobile}
+                />
+              </div>
             </div>
           )
         ) : (
@@ -1481,7 +1486,7 @@ export default function TradePage(){
                   </div>
                 )}
 
-                <div className="flex-1 flex flex-col chart-container mobile-chart-responsive">
+                <div className="flex-1 min-w-0 min-h-0 max-h-[520px] flex flex-col chart-container">
                   <MTChart symbol={symbol} timeframe={timeframe} />
                 </div>
               </div>

@@ -10,6 +10,37 @@ export default function TradeChart({ data, bids, asks }: { data: Point[]; bids?:
   const bidsRef = useRef<any>(null);
   const asksRef = useRef<any>(null);
   const chartRef = useRef<any>(null);
+  const themeObserverRef = useRef<MutationObserver | null>(null);
+
+  const getVar = (name: string, fallback: string) => {
+    try {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    } catch (_err) {
+      return fallback;
+    }
+  };
+
+  const applyTheme = () => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const bg = getVar('--bg-secondary', '#ffffff');
+    const text = getVar('--text-secondary', '#334155');
+    const grid = getVar('--border-primary', '#d7e2f3');
+    const scale = getVar('--border-primary', '#d7e2f3');
+
+    try {
+      chart.applyOptions({
+        layout: { background: { color: bg }, textColor: text },
+        grid: { vertLines: { color: grid }, horzLines: { color: grid } },
+        rightPriceScale: { borderColor: scale },
+        timeScale: { borderColor: scale },
+      });
+    } catch (_err) {
+      // ignore
+    }
+  };
 
   // helper: convert tick series into small OHLC candles (one-second candles)
   const buildCandles = (points: Point[]) => {
@@ -30,8 +61,16 @@ export default function TradeChart({ data, bids, asks }: { data: Point[]; bids?:
 
   useEffect(()=>{
     if(!ref.current) return;
-    const chart = createChart(ref.current, { width: ref.current.clientWidth, height: 300, layout: { background: { color: '#0b1220' }, textColor: '#cbd5e1' }, grid: { vertLines: { color: '#1f2937' }, horzLines: { color: '#1f2937' } }, rightPriceScale: { borderColor: '#1f2937' }, timeScale: { borderColor: '#1f2937' } });
+    const chart = createChart(ref.current, {
+      width: ref.current.clientWidth,
+      height: 300,
+      layout: { background: { color: '#0b1220' }, textColor: '#cbd5e1' },
+      grid: { vertLines: { color: '#1f2937' }, horzLines: { color: '#1f2937' } },
+      rightPriceScale: { borderColor: '#1f2937' },
+      timeScale: { borderColor: '#1f2937' }
+    });
     chartRef.current = chart;
+    applyTheme();
     // use addSeries for compatibility with different lightweight-charts builds
     // create series using a safe fallback strategy to avoid runtime assertions across lightweight-charts builds
     let candles: any = null;
@@ -75,9 +114,27 @@ export default function TradeChart({ data, bids, asks }: { data: Point[]; bids?:
     bidsRef.current = bidsArea;
     asksRef.current = asksArea;
 
-    const handleResize = () => { if(ref.current && chartRef.current) chartRef.current.applyOptions({ width: ref.current.clientWidth }); };
+    const handleResize = () => {
+      if(ref.current && chartRef.current) {
+        chartRef.current.applyOptions({ width: ref.current.clientWidth });
+        applyTheme();
+      }
+    };
     window.addEventListener('resize', handleResize);
-    return ()=>{ window.removeEventListener('resize', handleResize); chart.remove(); };
+
+    try {
+      const obs = new MutationObserver(() => applyTheme());
+      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      themeObserverRef.current = obs;
+    } catch (_err) {
+      // ignore
+    }
+
+    return ()=>{
+      window.removeEventListener('resize', handleResize);
+      try { themeObserverRef.current?.disconnect(); } catch (_err) {}
+      chart.remove();
+    };
   }, []);
 
   useEffect(()=>{

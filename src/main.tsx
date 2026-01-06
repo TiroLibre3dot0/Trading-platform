@@ -23,6 +23,18 @@ try {
   // ignore
 }
 
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  try {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {
+        // ignore
+      });
+    });
+  } catch (_err) {
+    // ignore
+  }
+}
+
 const root = createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <StrictMode>

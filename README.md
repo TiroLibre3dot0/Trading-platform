@@ -50,7 +50,6 @@ Questo progetto usa variabili sia lato Vite (front-end) sia lato server Express.
 
 - `VITE_API_BASE_URL` (opzionale): base URL per le chiamate API dal browser.
 	- Esempio: `http://localhost:4000`
-	- Se non impostata, alcune pagine possono assumere endpoint relativi (dipende dall'implementazione UI).
 
 ### Server (Express)
 
@@ -77,8 +76,6 @@ Endpoint proxy disponibili nel server:
 
 ## Test (Playwright)
 
-Playwright è già incluso tra le dev-deps.
-
 ```bash
 npm run test
 ```
@@ -89,7 +86,7 @@ Opzionale (runner UI):
 npm run test:e2e:ui
 ```
 
-Nota: i test assumono che l'app sia raggiungibile (default `http://localhost:5173`).
+Nota: i test avviano automaticamente Vite su `http://localhost:5173`.
 
 ## Deploy
 

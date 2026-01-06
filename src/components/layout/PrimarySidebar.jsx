@@ -35,7 +35,7 @@ export default function PrimarySidebar({ collapsed, active, onSelect, onToggleMe
         <div className="text-xs text-theme-secondary"> </div>
       </div>
 
-      <nav className="flex-1 px-2 py-3 space-y-1 overflow-auto panel-scroll relative">
+      <nav className="flex-1 min-h-0 px-2 py-3 space-y-1 overflow-hidden relative">
         {items.map(it => (
           <button key={it.id} onClick={() => (it.action ? it.action() : handleSelect(it.id))} disabled={it.disabled} className={`w-full flex items-center gap-3 rounded px-3 py-2 text-left transition-all duration-200 ${it.disabled ? 'cursor-not-allowed' : 'hover:bg-theme-secondary'} ${active===it.id ? 'bg-blue-600/10 border-r-2 border-blue-600' : ''}`}>
             <IconWrap><it.icon className={`w-5 h-5 ${it.disabled ? 'text-theme-secondary' : 'text-theme-secondary'}`} /></IconWrap>
