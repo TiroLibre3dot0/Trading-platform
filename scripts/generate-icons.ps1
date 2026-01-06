@@ -59,12 +59,13 @@ function New-LogoIcon(
 
 $logoPath = 'public\\Logo.png'
 
-# Favicons: transparent background
-New-LogoIcon 16  'public\\favicon-16x16.png' $logoPath '' 0.10
-New-LogoIcon 32  'public\\favicon-32x32.png' $logoPath '' 0.12
+$appBg = '#0f172a'
+
+# Favicons: use the same background as the manifest (improves visibility in browser tabs)
+New-LogoIcon 16  'public\\favicon-16x16.png' $logoPath $appBg 0.06
+New-LogoIcon 32  'public\\favicon-32x32.png' $logoPath $appBg 0.08
 
 # App icons: use the same background as the manifest
-$appBg = '#0f172a'
 New-LogoIcon 180 'public\\apple-touch-icon.png' $logoPath $appBg 0.18
 New-LogoIcon 192 'public\\android-chrome-192x192.png' $logoPath $appBg 0.18
 New-LogoIcon 512 'public\\android-chrome-512x512.png' $logoPath $appBg 0.22
